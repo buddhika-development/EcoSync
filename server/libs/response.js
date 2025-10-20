@@ -1,6 +1,6 @@
 
 export const SUCCESS = (data, message) => ({
-    status: "success",
+    success: true,
     message: message || "Request was successful",
     data: data || null,
     timestamp: new Date().toISOString()
@@ -8,7 +8,7 @@ export const SUCCESS = (data, message) => ({
 
 
 export const ERROR = (error, message) => ({
-    status: "error",
+    success: false,
     message: message || "An error occurred",
     error: error || null,
     timestamp: new Date().toISOString()
@@ -16,6 +16,6 @@ export const ERROR = (error, message) => ({
 
 
 export const sendResponse = (res, response) => (
-    res.status(response.status === "success" ? 200 : 400).json(response)
+    res.status(response.success ? 200 : 400).json(response)
 )
 
