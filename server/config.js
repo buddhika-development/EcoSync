@@ -5,8 +5,8 @@ export const APPLICATION_CONFIG = {
 }
 
 export const DATABASE_CONFIG = {
-    DB_URL : process.env.NEXT_PUBLIC_DB_URL,
-    DB_ANON_KEY : process.env.NEXT_PUBLIC_DB_ANON_KEY
+    DB_URL : process.env.DB_URL,
+    DB_ANON_KEY : process.env.DB_ANON_KEY
 }
 
 export const CORS_CONFIG = [

@@ -15,7 +15,6 @@ health_router.get('/status', (req ,res) => {
     const environment = process.env.NODE_ENV || "development";
     const version = "1.0.0";
     sendResponse(res, SUCCESS({
-        status: "OK",
         timestamp: new Date().toISOString(),
         uptime: uptime,
         environment: environment,
