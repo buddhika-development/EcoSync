@@ -1,5 +1,5 @@
 
-export const SUCCESS = (data, message) => ({
+export const SUCCESS = (message, data) => ({
     success: true,
     message: message || "Request was successful",
     data: data || null,
@@ -7,7 +7,7 @@ export const SUCCESS = (data, message) => ({
 })
 
 
-export const ERROR = (error, message) => ({
+export const ERROR = (message, error) => ({
     success: false,
     message: message || "An error occurred",
     error: error || null,
