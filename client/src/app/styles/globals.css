@@ -1,26 +1,105 @@
-@import "tailwindcss";
+/* === Tailwind base setup === */
+@import "tailwindcss/preflight";
+@tailwind utilities;
+@tailwind utilities;
 
+/* === Root theme tokens === */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* EcoSync brand palette */
+  --eco-primary: #39B56A;
+  --eco-primary-dark: #2D9255;
+  --eco-primary-light: #6FDA93;
+  --eco-accent-lime: #A6E570;
+  --eco-accent-yellow: #F9D24A;
+
+  --eco-bg: #F7FDF9;
+  --eco-surface: #FFFFFF;
+  --eco-border: #E3F1E7;
+  --eco-text: #1A1A1A;
+  --eco-subtext: #5E665E;
+
+  --eco-success: #2BAE66;
+  --eco-warning: #FBBF24;
+  --eco-error: #EF4444;
+  --eco-info: #3B82F6;
+
+  --transition-base: 0.25s ease-in-out;
+
+  color-scheme: light dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* === Dark theme override === */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --eco-bg: #1F2E25;
+    --eco-surface: #2C3A30;
+    --eco-text: #FFFFFF;
+    --eco-subtext: #C9D5C9;
   }
 }
 
+/* === Global element defaults === */
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  background-color: var(--eco-bg);
+  color: var(--eco-text);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* === Utility improvements === */
+a {
+  color: var(--eco-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+a:hover {
+  color: var(--eco-primary-dark);
+}
+
+button {
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--eco-surface);
+  border: 1px solid var(--eco-border);
+  border-radius: 0.375rem;
+  /* matches Tailwind rounded-md */
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--eco-primary);
+  box-shadow: 0 0 0 2px rgba(57, 181, 106, 0.2);
+}
+
+/* === Reusable helper classes === */
+.bg-surface {
+  background-color: var(--eco-surface);
+}
+
+.text-subtle {
+  color: var(--eco-subtext);
+}
+
+.card {
+  background-color: var(--eco-surface);
+  border: 1px solid var(--eco-border);
+  border-radius: 0.75rem;
+  /* matches rounded-xl */
+  padding: 1.25rem;
+  /* matches p-5 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }

@@ -1,12 +1,21 @@
 {
   "dependencies": {
-    "@supabase/supabase-js": "^2.75.1",
+    "@supabase/supabase-js": "^2.76.1",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "convict": "^6.2.4",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
     "jest": "^30.2.0",
+    "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
-    "supertest": "^7.1.4"
+    "supertest": "^7.1.4",
+    "zod": "^4.1.12"
   },
   "type": "module",
   "scripts": {
@@ -14,5 +23,11 @@
     "start": "node server.js",
     "test": "jest",
     "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
