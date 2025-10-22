@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 const SALT_ROUNDS = 12;
 
@@ -14,4 +15,8 @@ export function verifyAccessJwt(token) {
     } catch (error) {
         return { error: 'Invalid or expired token' };
     }
+}
+
+export function randomToken(bytes = 48) {
+    return randomBytes(bytes).toString('hex');
 }

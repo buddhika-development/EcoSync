@@ -11,3 +11,5 @@ export const createUserSchema = z.object({
     user_role: RoleEnum.default('resident'),
     user_password: z.string().min(6, 'password must be at least 6 characters'),
 });
+
+
