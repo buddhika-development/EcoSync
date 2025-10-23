@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { sendResponse, SUCCESS } from "../../libs/response.js";
-import { _access_user_recycle_coin_balance, _create_new_recycle_coin_user, _update_recycle_coin_balance } from "../controller/recycle_coin.controller.js";
+import { _access_user_recycle_coin_balance, _create_new_recycle_coin_user, _update_recycle_coin_balance } from "../controller/recycleCoinController/recycle_coin.controller.js";
 
 const recycle_coin_router = Router()
 
 recycle_coin_router.get('/health', (req, res) => {
-    return sendResponse(res, SUCCESS("Recycle Coin API is healthy"))
+    return sendResponse(res, 200,SUCCESS("Recycle Coin API is healthy"))
 })
 
 recycle_coin_router.get('/user/recycle-coin/:user_id', _access_user_recycle_coin_balance)

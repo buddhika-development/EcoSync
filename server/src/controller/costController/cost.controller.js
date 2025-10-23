@@ -1,12 +1,12 @@
-import { ERROR, sendResponse, SUCCESS } from "../../libs/response.js"
-import { calculate_recycle_collection_cost, calculate_waste_collected_cost } from "../functions/_calculate_costs.js";
+import { ERROR, sendResponse, SUCCESS } from "../../../libs/response.js"
+import { calculate_recycle_collection_cost, calculate_waste_collected_cost } from "../../functions/_calculate_costs.js";
 
 export const _calculate_cost = async( req, res ) => {
 
     const user_id = await req.params.user_id || null;
 
     if(user_id === null) {
-        return sendResponse(res, ERROR("User ID is required to calculate cost"))
+        return sendResponse(res, 400, ERROR("User ID is required to calculate cost"))
     }
 
     const waste_collection_cost = await calculate_waste_collected_cost(user_id);
@@ -21,8 +21,8 @@ export const _calculate_cost = async( req, res ) => {
     }
 
     if(waste_collection_cost.error) {
-        return sendResponse(res, ERROR(waste_collection_cost.message, waste_collection_cost.error))
+        return sendResponse(res, 400, ERROR(waste_collection_cost.message, waste_collection_cost.error))
     }
 
-    return sendResponse(res, SUCCESS(waste_collection_cost.message, cost_data))
+    return sendResponse(res, 200, SUCCESS(waste_collection_cost.message, cost_data))
 }
