@@ -6,7 +6,10 @@ import { supabase } from "../../../libs/supabase/supabase.js";
  * - Single Responsibility: Only handles database operations for bins
  * - Dependency Inversion: Abstracts database details from business logic
  * Design Pattern: Repository Pattern - encapsulates data access logic
- * 
+ */
+
+/**
+ * Create a new bin
  * @param {Object} bin - Validated bin data to insert
  * @returns {Promise<{data: Object|null, error: Object|null}>} Supabase response
  */

@@ -1,0 +1,35 @@
+import { fail, okay } from "../../../libs/response.js";
+import updateBinStatusUC from "../../usecase/collectorUsecase/updateBinStatusUC.js";
+
+/**
+ * Controller for updating bin status when collected
+ * SOLID: Single Responsibility - only handles HTTP request/response
+ * 
+ * @param {Object} req - Express request (expects req.params.binId, req.body.bin_status, req.body.full_bin_status, req.body.order_id)
+ * @param {Object} res - Express response
+ */
+export default async function updateBinStatusController(req, res) {
+    try {
+        const { binId } = req.params;
+        const { bin_status, full_bin_status, order_id } = req.body;
+        const collectorId = req.user?.uid;
+
+        if (!collectorId) {
+            return fail(res, "Authentication required", 401);
+        }
+
+        console.log(`Updating bin ${binId} status to:`, bin_status, full_bin_status);
+
+        // Delegate to use case layer
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId, order_id);
+
+        if (!result.ok) {
+            return fail(res, result.message, result.status);
+        }
+
+        return okay(res, result.data, result.message, result.status);
+    } catch (error) {
+        console.error("Unexpected error in updateBinStatusController:", error);
+        return fail(res, "Internal Server Error", 500);
+    }
+}
