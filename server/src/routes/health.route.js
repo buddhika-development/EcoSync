@@ -4,7 +4,7 @@ import { sendResponse, SUCCESS } from "../../libs/response.js";
 const health_router = Router()
 
 health_router.get('/', (req ,res) => {
-    sendResponse(res, SUCCESS(
+    sendResponse(res, 200, SUCCESS(
         "API endpoint is health."
     ))
 })
