@@ -3,3 +3,14 @@
 */.env.*
 */.env
 .env
+node_modules/
+.env
+.env.local
+.env.development
+.env.production
+
+.next/
+dist/
+out/
+coverage/
+*.log

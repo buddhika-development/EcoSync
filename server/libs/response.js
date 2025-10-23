@@ -14,8 +14,26 @@ export const ERROR = (message, error) => ({
     timestamp: new Date().toISOString()
 })
 
+export const okay = (res, data = {}, message = 'OK', status = 200) => {
+    res.status(status).json({
+        ok: true,
+        message,
+        data
+    })
+}
 
-export const sendResponse = (res, response) => (
-    res.status(response.success ? 200 : 400).json(response)
-)
+export const fail = (res, message = 'Error', status = 400, extra = {}) => {
+    res.status(status).json({
+        ok: false,
+        errors: {
+            message,
+            ...(extra || {})
+        }
+    })
+};
+
+
+export const sendResponse = (res, status, message) => {
+    res.status(status).json({ message });
+};
 
