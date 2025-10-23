@@ -11,7 +11,7 @@ const supabase_client = () => {
         throw new Error("Database credentials missing.")
     }
 
-    const DATABASE_CONNECTION = await createClient(
+    const DATABASE_CONNECTION = createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY
     )
