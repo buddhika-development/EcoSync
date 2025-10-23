@@ -15,10 +15,16 @@ export async function GetPickupProgressUseCase(orderId) {
   if (completed > 0 && completed < total) derivedStatus = "IN_PROGRESS";
   else if (completed === total && total > 0) derivedStatus = "COMPLETED";
 
+  const collectorName = order.collector
+    ? `${order.collector.user_first_name || ''} ${order.collector.user_last_name || ''}`.trim()
+    : null;
+
   return {
     orderId: order.order_id,
     areaId: order.area_id,
+    areaName: order.area?.area_name || null,
     collectorId: order.collector_id,
+    collectorName,
     scheduledDate: order.scheduled_date,
     totalTasks: total,
     completedTasks: completed,

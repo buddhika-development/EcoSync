@@ -37,10 +37,24 @@ export const AdminPickupRepository = {
 
   // Fetch order details + tasks + nested bin/location/area (for progress view)
   async getOrderWithTasks(orderId) {
-    // Order header
+    // Order header with area details
     const { data: order, error: orderErr } = await sb
       .from("pickup_orders")
-      .select("order_id, area_id, collector_id, status, scheduled_date, created_at")
+      .select(`
+        order_id, 
+        area_id, 
+        collector_id, 
+        status, 
+        scheduled_date, 
+        created_at,
+        area:area_id (
+          area_name
+        ),
+        collector:collector_id (
+          user_first_name,
+          user_last_name
+        )
+      `)
       .eq("order_id", orderId)
       .single();
 

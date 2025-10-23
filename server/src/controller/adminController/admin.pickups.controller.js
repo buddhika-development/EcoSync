@@ -6,8 +6,8 @@ import { GetPickupProgressUseCase } from "../../usecase/adminUsecase/getPickupPr
  */
 export async function schedulePickupController(req, res) {
   try {
-    const { areaId, binIds, scheduledDate, autoAssignCollector } = req.body;
-    const result = await SchedulePickupUseCase({ areaId, binIds, scheduledDate, autoAssignCollector });
+    const { areaId, areaName, binIds, scheduledDate, autoAssignCollector } = req.body;
+    const result = await SchedulePickupUseCase({ areaId, areaName, binIds, scheduledDate, autoAssignCollector });
     return res.status(201).json({ ok: true, message: "Pickup scheduled", ...result });
   } catch (err) {
     const status = err.code === "VALIDATION_ERROR" ? 400 : 500;
