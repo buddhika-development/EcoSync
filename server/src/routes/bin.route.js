@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { requireAuth, requireRole } from '../middleware/auth.js';
-import AddNewBinController from '../controller/binController/bincontroller.js';
 import validateBinQRController from '../controller/binController/validateBinQRController.js';
-import { requireAuth } from '../middleware/auth.js';
-
 import AddNewBinController from '../controller/binController/bincontroller.js';
 import makeGetMyBinsController from "../controller/binController/getMyBins.controller.js";
 import MarkBinFullController from "../controller/binController/markBinFull.controller.js";
@@ -29,11 +26,11 @@ const createBinLimiter = rateLimit({
 });
 
 const readMyBinsLimiter = rateLimit({
-  windowMs: 30_000,
-  max: 30,
-  message: "Too many requests. Please slow down.",
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: 30_000,
+    max: 30,
+    message: "Too many requests. Please slow down.",
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 const getUserBinsUsecase = makeGetUserBinsUsecase({ binRepository });
@@ -88,7 +85,7 @@ binRouter.get("/my", (req, _res, next) => {
     // put an existing users.user_id here (UUID from your DB)
     req.user = { id: "fc05b32f-2090-4517-ac16-e1fd299ceec4" };
     next();
-  }, readMyBinsLimiter, GetMyBinsController);
+}, readMyBinsLimiter, GetMyBinsController);
 binRouter.post("/:id/mark-full", MarkBinFullController);
 binRouter.get("/mine", requireAuth, getMyFullBinStatusController);
 binRouter.get("/:binId/history", GetBinHistoryController);
