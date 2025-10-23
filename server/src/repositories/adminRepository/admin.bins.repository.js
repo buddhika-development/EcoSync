@@ -15,7 +15,7 @@ export const AdminBinRepository = {
         bin_id,
         latitude,
         longitude,
-        area_id,
+        area:area_id (area_name),
         user_id,
         bin_status,
         created_at,

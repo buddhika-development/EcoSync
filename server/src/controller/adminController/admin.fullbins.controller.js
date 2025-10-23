@@ -6,8 +6,8 @@ import { GetAdminFullBinsUseCase } from "../../usecase/adminUsecase/getAdminFull
  */
 export async function getAdminFullBinsController(req, res) {
   try {
-    const { status, areaId, binId } = req.query;
-    const result = await GetAdminFullBinsUseCase({ status, areaId, binId });
+    const { status, areaId, areaName, binId } = req.query;
+    const result = await GetAdminFullBinsUseCase({ status, areaId, areaName, binId });
 
     return res.status(200).json({
       ok: true,
