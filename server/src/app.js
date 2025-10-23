@@ -9,6 +9,8 @@ import authRouter from './routes/auth.route.js'
 import meRouter from './routes/me.route.js'
 import userRouter from './routes/user.routes.js'
 import binRouter from './routes/bin.route.js'
+import collectorRouter from './routes/collector.route.js'
+// import recyclableRouter from './routes/recyclable.route.js'
 
 const create_app = () => {
     dotenv.config()
@@ -30,6 +32,8 @@ const create_app = () => {
     app.use('/api/auth', authRouter, meRouter)
     app.use('/api/users', userRouter)
     app.use('/api/bins', binRouter)
+    app.use('/api/collector', collectorRouter)
+    // app.use('/api/recyclable', recyclableRouter)
 
     return app
 }

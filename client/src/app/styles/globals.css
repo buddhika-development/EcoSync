@@ -1,7 +1,39 @@
-/* === Tailwind base setup === */
-@import "tailwindcss/preflight";
-@tailwind utilities;
-@tailwind utilities;
+/* === Tailwind CSS v4 Setup === */
+@import "tailwindcss";
+
+/* === Custom Theme Configuration === */
+@theme {
+  /* Custom colors for EcoSync */
+  --color-primary: #39B56A;
+  --color-primary-dark: #2D9255;
+  --color-primary-light: #6FDA93;
+
+  --color-accent-lime: #A6E570;
+  --color-accent-yellow: #F9D24A;
+
+  --color-neutral-bg: #F7FDF9;
+  --color-neutral-surface: #FFFFFF;
+  --color-neutral-border: #E3F1E7;
+  --color-neutral-text: #1A1A1A;
+  --color-neutral-subtext: #5E665E;
+
+  --color-success: #2BAE66;
+  --color-warning: #FBBF24;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Green scale for consistent theming */
+  --color-green-50: #F0FDF4;
+  --color-green-100: #DCFCE7;
+  --color-green-200: #BBF7D0;
+  --color-green-300: #86EFAC;
+  --color-green-400: #4ADE80;
+  --color-green-500: #22C55E;
+  --color-green-600: #16A34A;
+  --color-green-700: #15803D;
+  --color-green-800: #166534;
+  --color-green-900: #14532D;
+}
 
 /* === Root theme tokens === */
 :root {

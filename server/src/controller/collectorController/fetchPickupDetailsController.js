@@ -1,0 +1,38 @@
+import { fail, okay } from "../../../libs/response.js";
+import fetchPickupDetailsUC from "../../usecase/collectorUsecase/fetchPickupDetailsUC.js";
+
+/**
+ * Controller for fetching detailed bins for a specific pickup order
+ * SOLID: Single Responsibility - only handles HTTP request/response
+ * 
+ * @param {Object} req - Express request (expects req.params.orderId)
+ * @param {Object} res - Express response
+ */
+export default async function fetchPickupDetailsController(req, res) {
+    try {
+        const { orderId } = req.params;
+        //const collectorId = req.user?.uid;
+        const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
+
+        if (!collectorId) {
+            return fail(res, "Authentication required", 401);
+        }
+
+        console.log("Fetching pickup details for order:", orderId);
+        console.log("Fetching pickup details for collector:", collectorId);
+
+        // Delegate to use case layer
+        const { ok, status, message, data } = await fetchPickupDetailsUC(orderId, collectorId);
+
+        console.log("Fetch pickup details result:", { ok, status, message, data });
+
+        if (!ok) {
+            return fail(res, message, status);
+        }
+
+        return okay(res, data, message, status);
+    } catch (error) {
+        console.error("Unexpected error in fetchPickupDetailsController:", error);
+        return fail(res, "Internal Server Error", 500);
+    }
+}
