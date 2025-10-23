@@ -24,32 +24,40 @@ export async function createNewBin(bin) {
 }
 
 /**
- * Get bin by ID
- * @param {string} binId - UUID of bin
- * @returns {Promise<{data: Object|null, error: Object|null}>}
+ * READ: list bins owned by a user, with optional status filter & pagination.
+ * @param {Object} params
+ * @param {string} params.userId - owner (required)
+ * @param {string|undefined} params.status - optional bin_status
+ * @param {number} params.page - 1-based page
+ * @param {number} params.pageSize - items per page
+ * @returns {Promise<{data:Array, error:any, total:number}>}
  */
-export async function getBinById(binId) {
-    const { data, error } = await supabase
-        .from('bins')
-        .select('*')
-        .eq('bin_id', binId)
-        .single();
+export async function findBinsByUser({ userId, status, page, pageSize }) {
+  // Base query
+  let query = supabase
+    .from("bins")
+    .select("*", { count: "exact" })
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
-    return { data, error };
+  // Optional filter
+  if (status) {
+    query = query.eq("bin_status", status);
+  }
+
+  // Pagination (convert to 0-based range)
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await query.range(from, to);
+
+  return { data, error, total: count ?? 0 };
 }
 
-/**
- * Get bin by QR code link
- * This is used to validate QR codes before allowing bin status updates
- * @param {string} qrCodeLink - Full QR code link (e.g., "ecosync://bin/abc123...")
- * @returns {Promise<{data: Object|null, error: Object|null}>}
- */
-export async function getBinByQRCode(qrCodeLink) {
-    const { data, error } = await supabase
-        .from('bins')
-        .select('*')
-        .eq('qr_code_link', qrCodeLink)
-        .single();
+export async function markBinFull(binId) {
+  const db = await supabase;
+  const { data, error } = await db.rpc("mark_bin_full", { p_bin_id: binId }).single();
 
-    return { data, error };
+  if (error) throw new Error(error.message);
+  return data; // new full_bin_status row
 }

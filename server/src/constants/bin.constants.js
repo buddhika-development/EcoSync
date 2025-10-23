@@ -16,4 +16,5 @@ export const BIN_ERRORS = {
 export const BIN_SUCCESS = {
     CREATED: 'Bin created successfully',
     QR_VALIDATED: 'QR code validated successfully',
+    FETCHED: 'Bins fetched successfully',
 };
