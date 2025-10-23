@@ -13,6 +13,7 @@ import meRouter from './routes/me.route.js'
 import userRouter from './routes/user.routes.js'
 import binRouter from './routes/bin.route.js'
 import adminRouter from './routes/admin.route.js'
+import recyclablesRouter from './routes/recyclables.route.js'
 
 const create_app = () => {
     dotenv.config()
@@ -39,6 +40,7 @@ const create_app = () => {
     app.use('/api/users', userRouter)
     app.use('/api/bins', binRouter)
     app.use('/api/admin', adminRouter)
+    app.use("/api/recyclables", recyclablesRouter)
 
     return app
 }
