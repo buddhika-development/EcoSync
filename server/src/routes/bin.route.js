@@ -6,6 +6,7 @@ import AddNewBinController from '../controller/binController/bincontroller.js';
 import makeGetMyBinsController from "../controller/binController/getMyBins.controller.js";
 import MarkBinFullController from "../controller/binController/markBinFull.controller.js";
 import getMyFullBinStatusController from '../controller/binController/getMyFullBinStatus.controller.js';
+import { GetBinHistoryController } from '../controller/binController/binHistory.controller.js';
 
 import makeGetUserBinsUsecase from '../usecase/binUsecase/getUserBinUsecase.js';
 import * as binRepository from "../repositories/binRepository/binRepo.js";
@@ -50,5 +51,6 @@ binRouter.get("/my", (req, _res, next) => {
   }, readMyBinsLimiter, GetMyBinsController);
 binRouter.post("/:id/mark-full", MarkBinFullController);
 binRouter.get("/mine", requireAuth, getMyFullBinStatusController);
+binRouter.get("/:binId/history", GetBinHistoryController);
 
 export default binRouter;
