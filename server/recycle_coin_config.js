@@ -1,0 +1,1 @@
+export const recycle_coin_transaction_types = ["earn", "spend"];
