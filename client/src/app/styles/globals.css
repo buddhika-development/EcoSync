@@ -84,13 +84,7 @@ body {
 
 /* === Utility improvements === */
 a {
-  color: var(--eco-primary);
   text-decoration: none;
-  transition: color var(--transition-base);
-}
-
-a:hover {
-  color: var(--eco-primary-dark);
 }
 
 button {

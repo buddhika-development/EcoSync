@@ -44,15 +44,17 @@ export default async function fetchPickupDetailsUC(orderId, collectorId) {
         };
     }
 
-    const { data: user, error: userError } = await checkCollectorAndOrder(collectorId, orderId);
-
     // Step 3: Verify collector owns this order (if bins exist)
-    if (bins && bins.length > 0 && user.collector_id !== collectorId && !userError) {
-        return {
-            ok: false,
-            status: 403,
-            message: COLLECTOR_ERRORS.UNAUTHORIZED
-        };
+    if (bins && bins.length > 0) {
+        const { data: orderCheck, error: orderError } = await checkCollectorAndOrder(collectorId, orderId);
+
+        if (orderError || !orderCheck) {
+            return {
+                ok: false,
+                status: 403,
+                message: COLLECTOR_ERRORS.UNAUTHORIZED
+            };
+        }
     }
 
     // Step 4: Return success
