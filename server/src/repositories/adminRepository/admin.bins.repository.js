@@ -3,9 +3,9 @@ import { supabase_client } from "../../../libs/supabase/supabase.js";
 
 export const AdminBinRepository = {
   /**
-   * Fetch bins with optional filters (status, areaId, search)
+   * Fetch bins with optional filters (status, areaId, areaName, search)
    */
-  async findBins({ status, areaId, search }) {
+  async findBins({ status, areaId, areaName, search }) {
     const supabase = supabase_client;
 
     // Select only the fields admin dashboard needs
@@ -15,7 +15,9 @@ export const AdminBinRepository = {
         bin_id,
         latitude,
         longitude,
-        area:area_id (area_name),
+        area:area_id!inner (
+          area_name
+        ),
         user_id,
         bin_status,
         created_at,
@@ -23,15 +25,20 @@ export const AdminBinRepository = {
       `, { count: "exact" });
 
     // Apply filters only when actually provided
-    if (status && status.trim() !== "") {
-      query = query.eq("bin_status", status.toUpperCase());
+    if (status) {
+      query = query.eq("bin_status", status);
     }
 
-    if (areaId && areaId.trim() !== "") {
+    if (areaId) {
       query = query.eq("area_id", areaId);
     }
 
-    if (search && search.trim() !== "") {
+    if (areaName) {
+      // Filter by area name using the referenced table
+      query = query.eq("area_id.area_name", areaName);
+    }
+
+    if (search) {
       // Adjust this if you later add a "label" column for bins
       query = query.ilike("bin_id::text", `%${search}%`);
     }
