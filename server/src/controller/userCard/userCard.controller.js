@@ -15,6 +15,7 @@ export const _get_user_card_details = async (req, res) => {
 
 export const _insert_new_user_card = async (req, res) => {
     const request_body = await req.body;
+    
     const user_id = request_body.user_id || null;
     const card_number = request_body.card_number || null;
     const cvc = request_body.cvc || null;
