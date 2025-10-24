@@ -24,7 +24,7 @@ export const calculate_waste_collected_cost = async (user_id) => {
     const collected_bin_details = [];
 
     for(const bin_id of user_bins) {
-        const bin_status = await access_bin_details_with_status_filter_by_id("COLLECTED", bin_id)
+        const bin_status = await access_bin_details_with_status_filter_by_id("PENDING", bin_id)
         
         if(bin_status.error) {
             return {
@@ -53,7 +53,8 @@ export const calculate_waste_collected_cost = async (user_id) => {
     return {
         message: "Successfully calculated waste collection cost",
         data: {
-            waste_collection_cost: waste_collection_cost,
+            collection_count: collected_bin_details.length,
+            collection_cost: waste_collection_cost,
             tax: tax,
             total_cost: total_cost
         }
@@ -65,7 +66,7 @@ export const calculate_waste_collected_cost = async (user_id) => {
 export const calculate_recycle_collection_cost = async (user_id) => {
 
     const user_recycle_request_details_res = await access_user_recycle_collect_requests_filter_by_status(
-        user_id, "COMPLETED"
+        user_id, "PENDING"
     )
     
     if(user_recycle_request_details_res.error) {
@@ -92,7 +93,8 @@ export const calculate_recycle_collection_cost = async (user_id) => {
     return {
         message: "Successfully calculated recycle collection cost",
         data: {
-            recycle_collection_cost: recycle_collection_cost,
+            collection_count: recycle_collection_count,
+            collection_cost: recycle_collection_cost,
             tax: tax,
             total_cost: total_cost
         }

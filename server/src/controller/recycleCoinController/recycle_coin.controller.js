@@ -62,11 +62,8 @@ export const _update_recycle_coin_balance = async (req, res) => {
         current_recyle_coin_balance += amount;
     }
     // handle the spend transactions
-    else if (recycle_coin_transaction_type.toLowerCase() === "spend") {
-        if (current_recyle_coin_balance < amount) {
-            return sendResponse(res, 400, ERROR("Insufficient recycle coin balance."));
-        }
-        current_recyle_coin_balance -= amount;
+    if ( recycle_coin_transaction_type.toLowerCase() === "spend" && current_recyle_coin_balance >= amount) {
+        current_recyle_coin_balance -= amount
     }
 
     const update_balance_result = await update_recycle_coin_balance(user_id, current_recyle_coin_balance);
