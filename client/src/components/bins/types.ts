@@ -8,6 +8,7 @@ export interface Bin {
   location: string;
   lastUpdated: string; // ISO or display string (frontend-only here)
   status: BinStatus;
+  qrCodeLink?: string; // QR code link for the bin (optional for backward compatibility)
 }
 
 export type HistoryStatus = 'PENDING' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 
 interface CollectorHeaderProps {
     userName?: string;
@@ -53,6 +53,15 @@ export default function CollectorHeader({ userName = 'User', userInitials = 'U' 
                                 {item.label}
                             </Link>
                         ))}
+
+                        {/* Logout Button */}
+                        <Link
+                            href="/api/logout?redirect=/login"
+                            className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90 no-underline flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Logout
+                        </Link>
                     </nav>
 
 

@@ -30,6 +30,7 @@ export default function makeGetMyBinsController({ getUserBinsUsecase }) {
       const result = await getUserBinsUsecase(rawInput);
 
       console.log(userId);
+      console.log("GetMyBinsController result:", result);
 
       if (!result.ok) {
         return fail(res, result.message, result.status, result.errors);
