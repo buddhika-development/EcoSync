@@ -41,6 +41,7 @@ export default function Page() {
   const [bins, setBins] = useState<Bin[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // QR Modal state
   const [qrModalOpen, setQrModalOpen] = useState(false);
@@ -49,10 +50,10 @@ export default function Page() {
   const handleMarkFull = useCallback(async (id: string) => {
     try {
       setError(null);
-      const res = await fetch(`/api/bins/${id}/mark-full`, {
+      setSuccessMessage(null);
+
+      const res = await api(`/api/bins/${id}/mark-full`, {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
       });
       const body = await res.json();
       if (!res.ok || body?.ok === false) {
@@ -62,8 +63,15 @@ export default function Page() {
       setBins(prev =>
         prev.map(b => (b.id === id ? { ...b, status: 'FULL', lastUpdated: new Date().toLocaleString() } : b))
       );
+
+      // Show success message
+      setSuccessMessage('Bin successfully marked as full! A pickup request has been created.');
+      setTimeout(() => setSuccessMessage(null), 5000); // Clear after 5 seconds
+
     } catch (e: any) {
-      setError(e.message ?? 'Failed to mark bin as full');
+      const errorMsg = e.message ?? 'Failed to mark bin as full';
+      setError(errorMsg);
+      setTimeout(() => setError(null), 5000); // Clear after 5 seconds
     }
   }, []);
 
@@ -117,6 +125,50 @@ export default function Page() {
           {/* === Title === */}
           <h1 className="text-2xl font-bold text-gray-800 mb-6">My Bins</h1>
 
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-md animate-slide-in">
+              <div className="flex items-center">
+                <svg
+                  className="w-6 h-6 text-green-500 mr-3 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p className="text-green-800 font-medium">{successMessage}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && !loading && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-md animate-slide-in">
+              <div className="flex items-center">
+                <svg
+                  className="w-6 h-6 text-red-500 mr-3 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p className="text-red-800 font-medium">{error}</p>
+              </div>
+            </div>
+          )}
+
           {/* === Search Bar === */}
           <div className="mb-10">
             <MyBinsToolbar
@@ -126,11 +178,6 @@ export default function Page() {
           </div>
 
           {loading && <div className="text-gray-600">Loading bins…</div>}
-          {error && !loading && (
-            <div className="text-red-600 border border-red-200 bg-red-50 rounded-xl p-3 mb-6">
-              {error}
-            </div>
-          )}
 
           {/* === Cards grid === */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -160,6 +207,23 @@ export default function Page() {
           qrCodeLink={selectedBin.qrCodeLink}
         />
       )}
+
+      {/* CSS for animations */}
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+      `}</style>
     </main>
   );
 }

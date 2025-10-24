@@ -10,6 +10,6 @@ recycle_router.get('/health', (req, res) => {
 })
 
 // recycle endpoint => e wast
-recycle_router.post('/e-waste', _e_waste_controller)
+recycle_router.post('/waste', _e_waste_controller)
 
 export default recycle_router

@@ -1,24 +1,31 @@
 // ✅ Open/Closed Principle: can easily extend color logic without modifying the core component
 import React from "react";
 
-type Status = "Pending" | "Scheduled" | "Completed" | "Cancelled";
+type Status = "PENDING" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
 
 interface BadgeProps {
   status: Status;
 }
 
 const colorMap: Record<Status, string> = {
-  Pending: "bg-yellow-100 text-yellow-700",
-  Scheduled: "bg-blue-100 text-blue-700",
-  Completed: "bg-green-100 text-green-700",
-  Cancelled: "bg-red-100 text-red-700",
+  PENDING: "bg-yellow-100 text-yellow-700",
+  SCHEDULED: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-green-100 text-green-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
+
+const displayMap: Record<Status, string> = {
+  PENDING: "Pending",
+  SCHEDULED: "Scheduled",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
 };
 
 const Badge: React.FC<BadgeProps> = ({ status }) => (
   <span
     className={`px-3 py-1 text-xs font-semibold rounded-full ${colorMap[status]}`}
   >
-    {status}
+    {displayMap[status]}
   </span>
 );
 
