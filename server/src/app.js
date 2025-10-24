@@ -16,6 +16,7 @@ import binRouter from './routes/bin.route.js'
 import collectorRouter from './routes/collector.route.js'
 import adminRouter from './routes/admin.route.js'
 import recyclablesRouter from './routes/recyclables.route.js'
+import user_card_router from './routes/user_card_details.route.js'
 
 const create_app = () => {
     dotenv.config()
@@ -38,6 +39,7 @@ const create_app = () => {
     app.use('/api/transaction', transaction_router)
     app.use('/api/recycle_coin', recycle_coin_router)
     app.use('/api/areas', areaRouter)
+    app.use('/api/user-card-details', user_card_router)
 
     app.use('/api/auth', authRouter, meRouter)
     app.use('/api/users', userRouter)
