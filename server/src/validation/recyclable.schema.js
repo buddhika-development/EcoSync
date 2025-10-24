@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 // Database enum values (uppercase with underscores)
-export const recyclableStatusEnum = z.enum(['PENDING', 'CLAIMED', 'COLLECTED', 'CANCELLED']);
+export const recyclableStatusEnum = z.enum(['PENDING', 'COMPLETED', 'CANCELLED']);
 
-export const recyclableCategoryEnum = z.enum(['PLASTIC', 'PAPER', 'METAL', 'GLASS', 'ELECTRONIC', 'OTHER']);
+export const recyclableCategoryEnum = z.enum(['plastic-waste', 'paper-waste', 'metal-waste', 'e-waste']);
 
-export const recyclableTypeEnum = z.enum(['PICKUP', 'DROPOFF']);
+export const recyclableTypeEnum = z.enum(['PICKUP', 'DROP-OFF']);
 
 /**
  * Schema for updating recyclable request

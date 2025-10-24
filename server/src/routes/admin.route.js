@@ -6,6 +6,7 @@ import {
     schedulePickupController,
     getPickupProgressController,
   } from "../controller/adminController/admin.pickups.controller.js";
+import { getScheduledRoutesController } from "../controller/adminController/admin.scheduledroutes.controller.js";
 import { getRecyclablesController } from "../controller/adminController/admin.recyclables.controller.js";
 
 const adminRouter = Router();
@@ -15,6 +16,7 @@ adminRouter.get("/bins", getAdminBinsController);
 adminRouter.get("/full-bins", getAdminFullBinsController);
 adminRouter.post("/pickups", schedulePickupController); 
 adminRouter.get("/pickups/:orderId", getPickupProgressController);
+adminRouter.get("/scheduled-routes", getScheduledRoutesController);
 adminRouter.get("/recyclables", getRecyclablesController);
 
 export default adminRouter;

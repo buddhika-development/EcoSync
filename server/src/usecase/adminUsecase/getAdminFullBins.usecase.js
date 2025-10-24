@@ -6,14 +6,14 @@ const VALID_REQUEST_STATUSES = ["PENDING", "SCHEDULED", "COMPLETED", "CANCELLED"
 export async function GetAdminFullBinsUseCase(query) {
   const { status, areaId, areaName, binId } = query ?? {};
 
-  // ✅ Step 1 — Validate filters
+  // Step 1 — Validate filters
   if (status && !VALID_REQUEST_STATUSES.includes(status.toUpperCase())) {
     const err = new Error(`Invalid status. Allowed: ${VALID_REQUEST_STATUSES.join(", ")}`);
     err.code = "VALIDATION_ERROR";
     throw err;
   }
 
-  // ✅ Step 2 — Call repository (the repo now reads from view)
+  // Step 2 — Call repository (the repo now reads from view)
   const result = await AdminFullBinRepository.findFullBins({
     status: status ? status.toUpperCase() : undefined,
     areaId,
@@ -21,7 +21,7 @@ export async function GetAdminFullBinsUseCase(query) {
     binId,
   });
 
-  // ✅ Step 3 — The view already returns flat data, no need to unwrap nested objects
+  // Step 3 — The view already returns flat data, no need to unwrap nested objects
   const data = (result.items || []).map((row) => ({
     fullBinId: row.full_bin_id,
     binId: row.bin_id,

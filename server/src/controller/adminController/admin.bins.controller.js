@@ -2,8 +2,8 @@ import { GetAdminBinsUseCase } from "../../usecase/adminUsecase/getAdminBins.use
 
 export async function getAdminBinsController(req, res) {
   try {
-    const { status, areaId, search } = req.query;
-    const result = await GetAdminBinsUseCase({ status, areaId, search });
+    const { status, areaId, areaName, search } = req.query;
+    const result = await GetAdminBinsUseCase({ status, areaId, areaName, search });
 
     return res.status(200).json({
       ok: true,

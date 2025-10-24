@@ -17,7 +17,7 @@ export default function makeGetMyBinsController({ getUserBinsUsecase }) {
     try {
       // NOTE: adapt to your auth payload shape
       const userId =
-        req.user?.id || req.user?.user_id || req.auth?.userId || req.auth?.id;
+        req.user?.uid || req.user?.user_id || req.auth?.userId || req.auth?.id;
 
       // Build raw input for the use case
       const rawInput = {
@@ -28,6 +28,9 @@ export default function makeGetMyBinsController({ getUserBinsUsecase }) {
       };
 
       const result = await getUserBinsUsecase(rawInput);
+
+      console.log(userId);
+      console.log("GetMyBinsController result:", result);
 
       if (!result.ok) {
         return fail(res, result.message, result.status, result.errors);

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 
 interface CollectorHeaderProps {
     userName?: string;
@@ -23,21 +23,18 @@ export default function CollectorHeader({ userName = 'User', userInitials = 'U' 
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+                <div className="flex items-center justify-between h-18">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
                         <Link href="/collector/dashboard" className="flex items-center gap-2">
                             <Image
                                 src="/logo.png"
                                 alt="EcoSync Logo"
-                                width={40}
-                                height={40}
+                                width={150}
+                                height={150}
                                 className="object-contain"
                                 priority
                             />
-                            <span className="text-xl font-bold text-green-700 hidden sm:inline">
-                                EcoSync
-                            </span>
                         </Link>
                     </div>
 
@@ -47,18 +44,27 @@ export default function CollectorHeader({ userName = 'User', userInitials = 'U' 
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`
-                                    px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
-                                    ${item.active
-                                        ? 'bg-green-600 text-white shadow-md'
-                                        : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
-                                    }
-                                `}
+                                style={{
+                                    backgroundColor: item.active ? '#28A745' : 'transparent',
+                                    color: item.active ? '#FFFFFF' : '#28A745',
+                                }}
+                                className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90 no-underline"
                             >
                                 {item.label}
                             </Link>
                         ))}
+
+                        {/* Logout Button */}
+                        <Link
+                            href="/api/logout?redirect=/login"
+                            className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90 no-underline flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Logout
+                        </Link>
                     </nav>
+
+
 
                     {/* User Info & Mobile Menu Button */}
                     <div className="flex items-center gap-3">

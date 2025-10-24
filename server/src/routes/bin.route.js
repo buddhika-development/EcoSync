@@ -81,11 +81,12 @@ binRouter.post(
 );
 
 binRouter.post('/add-new', createBinLimiter, AddNewBinController);
-binRouter.get("/my", (req, _res, next) => {
-    // put an existing users.user_id here (UUID from your DB)
-    req.user = { id: "fc05b32f-2090-4517-ac16-e1fd299ceec4" };
-    next();
-}, readMyBinsLimiter, GetMyBinsController);
+// binRouter.get("/my", (req, _res, next) => {
+//     // put an existing users.user_id here (UUID from your DB)
+//     req.user = { id: "fc05b32f-2090-4517-ac16-e1fd299ceec4" };
+//     next();
+// }, readMyBinsLimiter, GetMyBinsController);
+binRouter.get("/my", requireAuth, readMyBinsLimiter, GetMyBinsController);
 binRouter.post("/:id/mark-full", MarkBinFullController);
 binRouter.get("/mine", requireAuth, getMyFullBinStatusController);
 binRouter.get("/:binId/history", GetBinHistoryController);

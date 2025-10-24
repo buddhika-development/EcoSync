@@ -13,7 +13,6 @@ import meRouter from './routes/me.route.js'
 import userRouter from './routes/user.routes.js'
 import binRouter from './routes/bin.route.js'
 import collectorRouter from './routes/collector.route.js'
-// import recyclableRouter from './routes/recyclable.route.js'
 import adminRouter from './routes/admin.route.js'
 import recyclablesRouter from './routes/recyclables.route.js'
 
@@ -37,14 +36,13 @@ const create_app = () => {
     app.use('/api/costs', cost_router)
     app.use('/api/transaction', transaction_router)
     app.use('/api/recycle_coin', recycle_coin_router)
-    
+
     app.use('/api/auth', authRouter, meRouter)
     app.use('/api/users', userRouter)
     app.use('/api/bins', binRouter)
     app.use('/api/collector', collectorRouter)
-    // app.use('/api/recyclable', recyclableRouter)
     app.use('/api/admin', adminRouter)
-    app.use("/api/recyclables", recyclablesRouter)
+    app.use("/api/recyclable", recyclablesRouter)
 
     return app
 }
