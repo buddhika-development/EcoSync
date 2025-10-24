@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -10,6 +10,7 @@ import {
   ArrowPathIcon as RecycleIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
+import useCurrentUserId from '@/hooks/useCurrentUserId';
 
 const NAV = [
   { label: 'My Bins', href: '/app/home', icon: CubeIcon },
@@ -20,9 +21,35 @@ const NAV = [
 export default function ResidentNavbar() {
   const pathname = usePathname();
   const [active, setActive] = useState(pathname);
+  const [rewardPoints, setRewardPoints] = useState(0);
 
   // Hardcoded rewards for now (will be replaced with actual data later)
-  const rewardPoints = 1250;
+  const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const userId = useCurrentUserId()
+  
+  useEffect(() => {
+    const fetchRewardPoints = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/recycle_coin/user/recycle-coin/${userId}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setRewardPoints(data.message.data.recycle_coin_balance || 0);
+        } else {
+          console.error('Failed to fetch reward points');
+        }
+
+      }
+      catch (error) {
+        console.error('Error fetching reward points:', error);
+      }
+    }
+
+    fetchRewardPoints();
+  }, [userId])
 
   return (
     <nav className="w-full bg-white border-b border-gray-100 h-[80px]">
