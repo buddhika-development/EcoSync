@@ -248,7 +248,7 @@ const PaymentDetails: React.FC = () => {
         ) : paymentDetails ? (
           <div className="space-y-8">
             <div className="text-center bg-gradient-to-r from-green-600 to-green-700 font-poppinstext-white rounded-2xl p-6 shadow-md">
-              <h1 className="text-3xl font-bold">Billing Details</h1>
+              <h1 className="text-3xl font-bold font-poppins text-white">Billing Details</h1>
               <p className="text-white/90 mt-2 font-poppins">View and manage your payment information</p>
             </div>
 

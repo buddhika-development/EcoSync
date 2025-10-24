@@ -15,7 +15,7 @@ const poppins = Poppins({
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning className= {`${poppins.variable}`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
