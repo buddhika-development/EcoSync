@@ -46,16 +46,14 @@ export default function MyBins() {
                     throw new Error('Failed to fetch bins');
                 }
                 const data: BinsResponse = await res.json();
-                console.log('Bins data:', data); // Debug log
+                console.log('Bins data:', data);
                 setBins(data.data.items);
                 
-                // Fetch history for each bin
                 const histories: Record<string, BinHistoryRow[]> = {};
                 await Promise.all(
                     data.data.items.map(async (bin) => {
                         try {
                             const historyData = await getBinHistory(bin.bin_id);
-                            console.log(`History data for bin ${bin.bin_id}:`, historyData); // Debug log
                             histories[bin.bin_id] = historyData;
                         } catch (err) {
                             console.error(`Error fetching history for bin ${bin.bin_id}:`, err);
@@ -78,9 +76,6 @@ export default function MyBins() {
     if (error) return <div>Error: {error}</div>;
     if (!bins.length) return <div>No bins found</div>;
 
-    // Log the first bin's data for debugging
-    console.log('First bin data:', bins[0]);
-    
     const filteredBins = bins.filter(bin => 
         activeFilter === 'ALL' ? true : bin.bin_status === activeFilter
     );
@@ -114,6 +109,7 @@ export default function MyBins() {
                         lastUpdated: new Date(bin.updated_at).toLocaleString(),
                         status: bin.bin_status,
                     };
+                    
                     return (
                         <BinCardComponent
                             key={bin.bin_id}
