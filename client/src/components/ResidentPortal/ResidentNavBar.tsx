@@ -14,7 +14,6 @@ import {
 const NAV = [
   { label: 'My Bins', href: '/app/home', icon: CubeIcon },
   { label: 'Recyclables', href: '/app/recyclables', icon: RecycleIcon },
-  { label: 'Rewards', href: '/app/rewards', icon: GiftIcon },
   { label: 'Payments', href: '/app/payments', icon: CreditCardIcon },
 ];
 
@@ -26,8 +25,8 @@ export default function ResidentNavbar() {
   const rewardPoints = 1250;
 
   return (
-    <nav className="w-full bg-white border-b border-gray-100">
-      <div className="flex items-center justify-between px-8 py-4">
+    <nav className="w-full bg-white border-b border-gray-100 h-[80px]">
+      <div className="flex items-center justify-between px-8 py-4 h-full w-full max-w-[1400px] mx-auto">
         {/* Navigation Links */}
         <div className="flex items-center gap-1">
           {NAV.map(({ href, label, icon: Icon }) => {
@@ -37,7 +36,7 @@ export default function ResidentNavbar() {
                 key={href}
                 href={href}
                 onClick={() => setActive(href)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 font-poppins
                   ${isActive
                     ? 'bg-gradient-to-br from-[#39B56A] to-[#2d9456] text-white shadow-md shadow-green-200'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-[#39B56A]'

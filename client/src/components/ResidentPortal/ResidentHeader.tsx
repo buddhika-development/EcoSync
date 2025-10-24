@@ -42,15 +42,15 @@ export default function ResidentHeader() {
 
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between px-8 py-4">
+      <div className="flex items-center justify-between px-8 w-full max-w-[1400px] mx-auto">
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center h-[80px]">
           <Image
             src="/logo.png"
             alt="EcoSync Logo"
-            width={140}
-            height={140}
-            className="object-contain"
+            width={200}
+            height={200}
+            className="h-[80px] w-auto object-contain"
           />
         </div>
 
@@ -58,8 +58,8 @@ export default function ResidentHeader() {
         <div className="flex items-center gap-4">
           {/* Welcome Message */}
           <div className="text-right">
-            <p className="text-xs text-gray-500 font-medium">Welcome back,</p>
-            <p className="text-sm font-semibold text-gray-900">{user?.name || 'User'}</p>
+            <p className="text-xs text-gray-500 font-medium font-poppins text-[14px]">Welcome back,</p>
+            <p className="text-sm font-semibold text-gray-900 text-[18px] font-poppins  ">{user?.name || 'User'}</p>
           </div>
 
           {/* User Menu */}
@@ -83,7 +83,7 @@ export default function ResidentHeader() {
                   onClick={() => setShowDropdown(false)}
                 />
 
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-20 overflow-hidden">
+                <div className="absolute right-0 mt-3 w-[400px] bg-white rounded-xl shadow-2xl border border-gray-200 z-20 overflow-hidden">
                   {/* User Info */}
                   <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 border-b border-gray-200">
                     <div className="flex items-center gap-3">
@@ -91,10 +91,10 @@ export default function ResidentHeader() {
                         {getInitials()}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-gray-900 font-poppins text-[16px]">
                           {user?.name || 'User'}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-xs text-gray-500 truncate font-poppins text-[14px]">
                           {user?.email || 'user@ecosync.com'}
                         </p>
                       </div>
@@ -105,7 +105,7 @@ export default function ResidentHeader() {
                   <div className="p-2">
                     <button
                       onClick={handleLogout}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors font-poppins text-[16px]"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Logout</span>
