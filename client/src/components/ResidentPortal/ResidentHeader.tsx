@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-export default function Header() {
+export default function ResidentHeader() {
   const router = useRouter();
   const { user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -37,67 +37,86 @@ export default function Header() {
       }
       return user.name.slice(0, 2).toUpperCase();
     }
-    return 'JD';
+    return 'U';
   };
 
   return (
-    <header className="w-full flex items-center justify-between px-6 py-3 bg-[#ffffff] border-b border-gray-200">
-      <div className="flex items-center space-x-2">
-        <div className="p-2 flex items-center justify-center">
+    <header className="w-full bg-white border-b border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between px-8 py-4">
+        {/* Logo */}
+        <div className="flex items-center">
           <Image
             src="/logo.png"
             alt="EcoSync Logo"
-            width={120}
-            height={120}
+            width={140}
+            height={140}
+            className="object-contain"
           />
         </div>
-      </div>
 
-      {/* User Menu */}
-      <div className="relative">
-        <button
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="w-10 h-10 rounded-full bg-[#39B56A] flex items-center justify-center text-white font-semibold shadow-sm hover:bg-[#2d9456] transition-colors"
-        >
-          {getInitials()}
-        </button>
+        {/* User Section */}
+        <div className="flex items-center gap-4">
+          {/* Welcome Message */}
+          <div className="text-right">
+            <p className="text-xs text-gray-500 font-medium">Welcome back,</p>
+            <p className="text-sm font-semibold text-gray-900">{user?.name || 'User'}</p>
+          </div>
 
-        {/* Dropdown Menu */}
-        {showDropdown && (
-          <>
-            {/* Backdrop to close dropdown when clicking outside */}
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setShowDropdown(false)}
-            />
-
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
-              {/* User Info */}
-              <div className="px-4 py-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <p className="text-sm font-medium text-gray-700">
-                    {user?.name || 'User'}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {user?.email || 'user@ecosync.com'}
-                </p>
+          {/* User Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-br from-[#39B56A] to-[#2d9456] hover:from-[#2d9456] hover:to-[#248a47] transition-all duration-300 shadow-md hover:shadow-lg group"
+            >
+              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm border-2 border-white/30">
+                {getInitials()}
               </div>
+              <ChevronDown className={`w-4 h-4 text-white transition-transform duration-300 ${showDropdown ? 'rotate-180' : ''}`} />
+            </button>
 
-              {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="w-full px-4 py-3 flex items-center gap-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
-          </>
-        )}
+            {/* Dropdown Menu */}
+            {showDropdown && (
+              <>
+                {/* Backdrop to close dropdown when clicking outside */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowDropdown(false)}
+                />
+
+                <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-20 overflow-hidden">
+                  {/* User Info */}
+                  <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#39B56A] to-[#2d9456] flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        {getInitials()}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-900">
+                          {user?.name || 'User'}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {user?.email || 'user@ecosync.com'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="p-2">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-3 flex items-center gap-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );
 }
-
