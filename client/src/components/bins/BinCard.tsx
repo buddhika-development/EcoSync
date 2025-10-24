@@ -1,14 +1,15 @@
 'use client';
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useEffect } from 'react';
 import {
   ClockIcon,
   QrCodeIcon,
   ChevronDownIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
+import { getBinHistory } from '@/services/binHistory.service';
 
-import type { Bin, BinHistoryRow } from './types';
+import type { Bin, BinHistoryRow, HistoryStatus } from './types';
 import { BIN_STATUS_BADGE, HISTORY_STATUS_BADGE } from './types';
 
 /**
@@ -33,21 +34,37 @@ import { BIN_STATUS_BADGE, HISTORY_STATUS_BADGE } from './types';
 
 type Props = {
   bin: Bin;
-  history?: BinHistoryRow[];
   onMarkFull?: (id: string) => void;
   onViewQr?: (id: string) => void;
 };
 
 function BinCardComponent({
   bin,
-  history = [],
   onMarkFull,
   onViewQr,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<BinHistoryRow[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Log the bin data received by BinCard
-  console.log('BinCard received bin:', bin);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!open) return;
+      setLoading(true);
+      try {
+        const historyData = await getBinHistory(bin.id);
+        console.log('Fetched history for bin:', historyData);
+        setHistory(historyData || []);
+      } catch (err) {
+        console.error('Error fetching history:', err);
+        setHistory([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [bin.id, open]);
 
   const toggleOpen = useCallback(() => setOpen((v) => !v), []);
   const handleViewQr = useCallback(() => onViewQr?.(bin.id), [onViewQr, bin.id]);
@@ -114,15 +131,20 @@ function BinCardComponent({
         aria-expanded={open}
         aria-controls={`bin-history-${bin.id}`}
       >
-        View History
+        View History {history?.length > 0 && `(${history.length})`}
         <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {/* === History content (stacked list cards) === */}
       {open && (
         <div id={`bin-history-${bin.id}`} className="px-5 pb-5">
-          {/* Guard clause — empty state */}
-          {history.length === 0 ? (
+          {/* Loading state */}
+          {loading ? (
+            <div className="text-sm text-gray-500 border border-dashed border-gray-200 rounded-xl p-4 text-center">
+              Loading history...
+            </div>
+          /* Guard clause — empty state */
+          ) : !history || history.length === 0 ? (
             <div className="text-sm text-gray-500 border border-dashed border-gray-200 rounded-xl p-4 text-center">
               No history yet.
             </div>
@@ -131,25 +153,56 @@ function BinCardComponent({
               {history.map((row, idx) => (
                 <li
                   key={`${bin.id}-h-${idx}`}
-                  className="bg-[#F7FDF9] rounded-xl p-4 border border-[#E6F4EA]"
+                  className={`rounded-xl p-4 ${
+                    row.request_status === 'COMPLETED'
+                      ? 'bg-green-50 border border-green-200'
+                      : 'bg-[#F7FDF9] border border-[#E6F4EA]'
+                  }`}
                 >
                   {/* Top row: date + status chip */}
                   <div className="flex items-center justify-between">
                     <div className="font-semibold text-gray-800">
-                      {row.dateTime}
+                      {(() => {
+                        console.log('Rendering history row:', row); // Debug log for each row
+                        
+                        switch (row.request_status) {
+                          case 'PENDING':
+                            if (!row.created_at) {
+                              console.warn('Missing created_at for PENDING request:', row);
+                              return 'Pending Request';
+                            }
+                            return new Date(row.created_at).toLocaleString();
+                          
+                          case 'COMPLETED':
+                            return row.updated_at 
+                              ? new Date(row.updated_at).toLocaleString()
+                              : 'Completed';
+                          
+                          case 'SCHEDULED':
+                            return row.updated_at
+                              ? new Date(row.updated_at).toLocaleString()
+                              : 'Scheduled';
+                          
+                          default:
+                            const date = row.updated_at || row.created_at;
+                            return date 
+                              ? new Date(date).toLocaleString()
+                              : formatHistoryStatus(row.request_status);
+                        }
+                      })()}
                     </div>
 
                     {/* ✅ History status chip (Pending/Scheduled/Completed/Cancelled) */}
                     <span
-                      className={`text-xs font-semibold px-3 py-1 rounded-full ${HISTORY_STATUS_BADGE[row.status]}`}
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${HISTORY_STATUS_BADGE[row.request_status as HistoryStatus]}`}
                     >
-                      {formatHistoryStatus(row.status)}
+                      {formatHistoryStatus(row.request_status)}
                     </span>
                   </div>
 
-                  {/* Notes/description */}
+                  {/* Request ID */}
                   <p className="mt-2 text-sm text-gray-600">
-                    {row.notes ?? '—'}
+                    Request ID: {row.full_bin_id.slice(0, 8).toUpperCase()}
                   </p>
                 </li>
               ))}
@@ -161,16 +214,27 @@ function BinCardComponent({
   );
 }
 
+/** Format a date string safely */
+function formatDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  try {
+    return new Date(dateStr).toLocaleString();
+  } catch (e) {
+    console.error('Error formatting date:', e);
+    return '';
+  }
+}
+
 /** ✅ Tiny formatter — keeps UI strings consistent (avoids sprinkling .toLowerCase()/case logic) */
-function formatHistoryStatus(s: BinHistoryRow['status']): string {
+function formatHistoryStatus(s: string): string {
   // 👇 Simple map (OCP-ready for i18n later)
-  const map = {
+  const map: Record<string, string> = {
     PENDING: 'Pending',
     SCHEDULED: 'Scheduled',
     COMPLETED: 'Completed',
     CANCELLED: 'Cancelled',
-  } as const;
-  return map[s];
+  };
+  return map[s] || s;
 }
 
 export default memo(BinCardComponent);
