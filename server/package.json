@@ -14,6 +14,7 @@
     "jest": "^30.2.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
+    "qrcode": "^1.5.4",
     "supertest": "^7.1.4",
     "zod": "^4.1.12"
   },
@@ -22,7 +23,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "generate-qr": "node scripts/generateTestQRCodes.js"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
