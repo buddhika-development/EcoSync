@@ -48,7 +48,7 @@ export const _update_recycle_coin_balance = async (req, res) => {
     }
     
     // handle the spend transactions
-    if ( recycle_coin_transaction_type.toLowerCase() === "spend" && current_recyle_coin_balance > amount) {
+    if ( recycle_coin_transaction_type.toLowerCase() === "spend" && current_recyle_coin_balance >= amount) {
         current_recyle_coin_balance -= amount
     }
     else {

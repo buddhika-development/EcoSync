@@ -13,8 +13,8 @@ import {
 const NAV = [
   { label: 'My Bins', href: '/app/home', icon: CubeIcon },
   { label: 'Recyclables', href: '/app/recyclables', icon: RecycleIcon },
-  { label: 'Rewards', href: '/protected/app/rewards', icon: GiftIcon },
-  { label: 'Payments', href: '/protected/app/payments', icon: CreditCardIcon },
+  { label: 'Rewards', href: '/app/rewards', icon: GiftIcon },
+  { label: 'Payments', href: '/app/payments', icon: CreditCardIcon },
 ];
 
 export default function ResidentNavbar() {
