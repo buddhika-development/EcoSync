@@ -41,7 +41,7 @@ const dummyRecyclables = [
   },
 ];
 
-export default function RecyclablePage() {
+export default function RecyclablePage(): React.ReactNode {
   const [status, setStatus] = useState<string>("All");
   const [open, setOpen] = useState(false);
 
@@ -58,22 +58,24 @@ export default function RecyclablePage() {
 
   return (
     <div className="min-h-screen bg-emerald-50 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 ">Recyclables</h1>
-        <button 
-        onClick={() => setOpen(true)}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm">
-          + New Recyclable Request
-        </button>
-      </header>
+      <div className="max-w-7xl mx-auto">
+        <header className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Recyclables</h1>
+          <button 
+            onClick={() => setOpen(true)}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm"
+          >
+            + New Recyclable Request
+          </button>
+        </header>
 
-      
-      <RecyclableFilters activeStatus={status} onStatusChange={setStatus} />
+        <RecyclableFilters activeStatus={status} onStatusChange={setStatus} />
 
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center max-w-7xl mx-auto">
-        {filteredRecyclables.map((rec) => (
-          <RecyclableCard key={rec.id} {...rec} />
-        ))}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredRecyclables.map((rec) => (
+            <RecyclableCard key={rec.id} {...rec} />
+          ))}
+        </div>
       </div>
 
       <RecyclableRequestModal
