@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import PaymentDetailsCard from "./PaymentDetailsCard";
 import { BeatLoader } from "react-spinners";
+import PaymentSidebar from "./PaymentSidebar";
+import useCurrentUserId from "@/hooks/useCurrentUserId";
+import PaymentSectionScelloton from "../scelaton/PaymentSectionScelloton";
 
 type CostDetails = {
   collection_count?: number
@@ -34,38 +37,51 @@ const PaymentDetails: React.FC = () => {
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
   const recycleCoinValue = 3.5;
-  const userId = "2510c54b-9573-4ef9-a3a9-94935408f01c";
+  // const userId = "2510c54b-9573-4ef9-a3a9-94935408f01c";
+  const userId = useCurrentUserId();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cards, setCards] = useState<Array<{id:string,last4:string,name?:string,brand?:string}>>([
+    { id: 'card_demo_1', last4: '4242', name: 'Personal', brand: 'Visa' }
+  ]);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  const onSelectCard = (cardId: string) => {
+    // toggle selection
+    setSelectedCardId((current) => (current === cardId ? null : cardId));
+  }
+
+  const onAddCard = (card: {id:string,last4:string,name?:string,brand?:string}) => {
+    setCards((c) => [card, ...c]);
+    setSelectedCardId(card.id);
+  }
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [paymentRes, pointRes] = await Promise.all([
+        fetch(`${baseUrl}/api/costs/calculate_cost/${userId}`),
+        fetch(`${baseUrl}/api/recycle_coin/user/recycle-coin/${userId}`),
+      ]);
+
+      const [paymentData, pointData] = await Promise.all([paymentRes.json(), pointRes.json()]);
+
+      const payment = Number(paymentData?.message?.data?.total_cost ?? 0);
+      const coinBalance = Number(pointData?.message?.data?.recycle_coin_balance ?? 0);
+
+      setPaymentDetails((paymentData?.message?.data ?? null) as PaymentDetailsData | null);
+      setRecyclePoints((pointData?.message?.data ?? null) as RecyclePoints | null);
+      setPaymentAmount(payment);
+      setOriginalPaymentAmount(paymentData?.message?.data?.total_cost ?? 0);
+      setRecycleCoinAmount(coinBalance);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [paymentRes, pointRes] = await Promise.all([
-          fetch(`${baseUrl}/api/costs/calculate_cost/${userId}`),
-          fetch(`${baseUrl}/api/recycle_coin/user/recycle-coin/${userId}`),
-        ]);
-
-        const [paymentData, pointData] = await Promise.all([
-          paymentRes.json(),
-          pointRes.json(),
-        ]);
-
-        const payment = Number(paymentData?.message?.data?.total_cost ?? 0);
-        const coinBalance = Number(
-          pointData?.message?.data?.recycle_coin_balance ?? 0
-        );
-
-  setPaymentDetails((paymentData?.message?.data ?? null) as PaymentDetailsData | null);
-  setRecyclePoints((pointData?.message?.data ?? null) as RecyclePoints | null);
-        setPaymentAmount(payment);
-        setOriginalPaymentAmount(paymentData?.message?.data?.total_cost ?? 0);
-        setRecycleCoinAmount(coinBalance);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -109,82 +125,47 @@ const PaymentDetails: React.FC = () => {
   // if there have use any recycle coin it need to update in the database using an api call
   // if payment amount is have still it need to reduce using payment gateway
   const handlePaymentAction = async() => {
+    // Open the sidebar so user can pick/add card and confirm
+    setSidebarOpen(true)
+  };
+
+  // process payment invoked by sidebar when user confirms
+  const processPaymentFromSidebar = async () => {
     setIsProcessing(true)
     try {
-      // If the user opted to use recycle coins, update the recycle coin balance first
-      if (isRecycleCoinUsed) {
-        // Only call recycle coin API when some coins are being used
-        alert(`Using ${usedRecycleCoinAmount} recycle coins towards payment.`)
-        if (usedRecycleCoinAmount > 0) {
-          const recycle_coin_payload = {
-            user_id: userId,
-            transaction_type: 'spend',
-            amount: usedRecycleCoinAmount
-          }
-
-          const recycleRes = await fetch(`${baseUrl}/api/recycle_coin/update-recycle-coin-balance`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(recycle_coin_payload)
-          })
-
-          if (!recycleRes.ok) {
-            // Try to surface server error message if available
-            let errText = 'Failed to update recycle coin balance.'
-            try { const errBody = await recycleRes.json(); errText = errBody?.message || errText } catch (e) {}
-            alert(errText)
-            return
-          }
-
-          const recycleData = await recycleRes.json()
-          console.log('Recycle Coin Update Response:', recycleData)
-        } else {
-          // No coins to update
-          console.log('No recycle coins to update')
+      // The payment flow uses the same rules as before: if recycle coin used, update it first
+      if (isRecycleCoinUsed && usedRecycleCoinAmount > 0) {
+        const recycle_coin_payload = {
+          user_id: userId,
+          transaction_type: 'spend',
+          amount: usedRecycleCoinAmount,
         }
 
-        // If there's still a payment amount remaining, create a bank transaction
-        if (paymentAmount > 0) {
-          const payment_payload = {
-            user_id: userId,
-            transaction_amount: Number(paymentAmount)
-          }
+        const recycleRes = await fetch(`${baseUrl}/api/recycle_coin/update-recycle-coin-balance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(recycle_coin_payload),
+        })
 
-          const paymentRes = await fetch(`${baseUrl}/api/transaction/new-transaction`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payment_payload)
-          })
-
-          if (!paymentRes.ok) {
-            let errText = 'Failed to create transaction.'
-            try { const errBody = await paymentRes.json(); errText = errBody?.message || errText } catch (e) {}
-            alert(errText)
-            return
-          }
-
-          const paymentData = await paymentRes.json()
-          console.log('Payment Transaction Response:', paymentData)
-          alert('Payment and recycle coin usage processed successfully.')
+        if (!recycleRes.ok) {
+          let errText = 'Failed to update recycle coin balance.'
+          try { const errBody = await recycleRes.json(); errText = errBody?.message || errText } catch (e) {}
+          alert(errText)
           return
         }
-
-        // If we reached here, recycle coins were used and no additional payment required
-        alert(`Recycle coin usage processed: ${usedRecycleCoinAmount} coins.`)
-        return
       }
 
-      // If recycle coins were not used, and there's an amount to pay, call the transaction API
-      if (!isRecycleCoinUsed && paymentAmount > 0) {
+      // If there's a remaining payment amount, create transaction
+      if (paymentAmount > 0) {
         const payment_payload = {
           user_id: userId,
-          transaction_amount: Number(paymentAmount)
+          transaction_amount: Number(paymentAmount),
         }
 
         const paymentRes = await fetch(`${baseUrl}/api/transaction/new-transaction`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payment_payload)
+          body: JSON.stringify(payment_payload),
         })
 
         if (!paymentRes.ok) {
@@ -193,22 +174,19 @@ const PaymentDetails: React.FC = () => {
           alert(errText)
           return
         }
-
-        const paymentData = await paymentRes.json()
-        console.log('Payment Transaction Response:', paymentData)
-        alert('Payment processed successfully.')
-        return
       }
 
-      // Nothing to do: no recycle coin usage and no payment amount
-      alert('No payment or recycle coin usage to process.')
+      // success: refresh payment details and recycle coin balance
+      await fetchData()
+      alert('Payment processed successfully.')
+      setSidebarOpen(false)
     } catch (err) {
       console.error(err)
       alert('An unexpected error occurred while processing payment.')
     } finally {
       setIsProcessing(false)
     }
-  };
+  }
 
   const wasteCollectionCost = Number(
     paymentDetails?.waste_collection_cost?.collection_cost ?? 0
@@ -223,28 +201,7 @@ const PaymentDetails: React.FC = () => {
     <div className="flex items-center justify-center p-4">
       <div className="w-full max-w-[1200px] bg-white rounded-2xl shadow-xl p-8 border-[1px] border-green-700 border-dashed">
         {isLoading ? (
-          <div className="space-y-6 animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-full" />
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 rounded w-2/3" />
-              </div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-full" />
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 rounded w-2/3" />
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <div className="h-12 bg-gray-200 rounded w-1/2" />
-            </div>
-            <div className="flex justify-center space-x-4">
-              <div className="h-10 bg-gray-200 rounded w-1/3" />
-              <div className="h-10 bg-gray-200 rounded w-1/3" />
-            </div>
-          </div>
+          <PaymentSectionScelloton />
         ) : paymentDetails ? (
           <div className="space-y-8">
             <div className="text-center bg-gradient-to-r from-green-600 to-green-700 font-poppinstext-white rounded-2xl p-6 shadow-md">
@@ -338,6 +295,18 @@ const PaymentDetails: React.FC = () => {
           </div>
         )}
       </div>
+      <PaymentSidebar
+        userId= {userId}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        cards={cards}
+        selectedCardId={selectedCardId}
+        onSelectCard={onSelectCard}
+        onAddCard={onAddCard}
+        onProcessPayment={processPaymentFromSidebar}
+        isProcessing={isProcessing}
+        paymentAmount={paymentAmount}
+      />
     </div>
   );
 };

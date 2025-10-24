@@ -1,6 +1,7 @@
 /* === Tailwind CSS v4 Setup === */
 @import "tailwindcss";
 
+
 /* === Custom Theme Configuration === */
 @theme {
   /* Custom colors for EcoSync */
@@ -131,6 +132,8 @@ select:focus {
   /* matches p-5 */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
+/* Helper classes remain defined via Tailwind config; use existing Tailwind utilities such as `font-poppins` */
 
 /* === Leaflet Map Styles === */
 .leaflet-container {
