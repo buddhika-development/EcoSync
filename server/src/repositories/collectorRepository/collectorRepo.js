@@ -121,12 +121,14 @@ export async function getPickupTasksByOrderId(orderId) {
 }
 
 /**
- * Check if all tasks in an order have been cleared (cleared_at is not null)
+ * Check if all tasks in an order have been cleared (collected or cancelled)
+ * Uses v_order_bins_detailed view which includes request_status from full_bin_requests
  * @param {string} orderId - UUID of pickup order
  * @returns {Promise<{allCleared: boolean, totalTasks: number, clearedTasks: number, error: Object|null}>}
  */
 export async function checkAllTasksCleared(orderId) {
-    const { data, error } = await getPickupTasksByOrderId(orderId);
+    // Use the bins view which has request_status
+    const { data, error } = await getPickupOrderBins(orderId);
 
     if (error) {
         return { allCleared: false, totalTasks: 0, clearedTasks: 0, error };
@@ -137,8 +139,25 @@ export async function checkAllTasksCleared(orderId) {
     }
 
     const totalTasks = data.length;
-    const clearedTasks = data.filter(task => task.cleared_at !== null).length;
+    // A task is cleared if request_status is COLLECTED or CANCELLED
+    // - PENDING = Not yet collected (bin waiting)
+    // - SCHEDULED = Assigned to route but not collected yet
+    // - COLLECTED = Successfully collected by collector ✅
+    // - CANCELLED = Request cancelled (considered "done") ✅
+    const clearedTasks = data.filter(task =>
+        task.request_status === 'COLLECTED' || task.request_status === 'CANCELLED'
+    ).length;
     const allCleared = clearedTasks === totalTasks;
+
+    console.log(`Order ${orderId} completion check:`, {
+        totalTasks,
+        clearedTasks,
+        allCleared,
+        statuses: data.map(t => ({
+            bin_id: t.bin_id?.substring(0, 8),
+            request_status: t.request_status
+        }))
+    });
 
     return { allCleared, totalTasks, clearedTasks, error: null };
 }

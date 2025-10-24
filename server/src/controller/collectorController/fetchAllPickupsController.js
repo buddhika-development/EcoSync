@@ -12,8 +12,7 @@ import fetchAllPickupsUC from "../../usecase/collectorUsecase/fetchAllPickupsUC.
 export default async function fetchAllPickupsController(req, res) {
     try {
         // Get collector ID from authenticated user (set by requireAuth middleware)
-        // const collectorId = req.user?.uid;
-        const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
+        const collectorId = req.user?.uid;
 
         if (!collectorId) {
             return fail(res, "Authentication required", 401);
