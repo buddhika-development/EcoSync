@@ -6,7 +6,13 @@ interface RecyclableFiltersProps {
   onStatusChange: (status: string) => void;
 }
 
-const statuses = ["All", "Pending", "Scheduled", "Completed", "Cancelled"];
+const statuses = [
+  { value: "All", label: "All" },
+  { value: "PENDING", label: "Pending" },
+  { value: "SCHEDULED", label: "Scheduled" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "CANCELLED", label: "Cancelled" },
+];
 
 const RecyclableFilters: React.FC<RecyclableFiltersProps> = ({
   activeStatus,
@@ -14,17 +20,16 @@ const RecyclableFilters: React.FC<RecyclableFiltersProps> = ({
 }) => {
   return (
     <div className="flex flex-wrap gap-3 items-center">
-      {statuses.map((status) => (
+      {statuses.map(({ value, label }) => (
         <button
-          key={status}
-          onClick={() => onStatusChange(status)}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-            activeStatus === status
-              ? "bg-emerald-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-emerald-50"
-          }`}
+          key={value}
+          onClick={() => onStatusChange(value)}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${activeStatus === value
+              ? "bg-emerald-500 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-emerald-50 border border-gray-200"
+            }`}
         >
-          {status}
+          {label}
         </button>
       ))}
     </div>

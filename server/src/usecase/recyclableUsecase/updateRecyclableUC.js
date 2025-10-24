@@ -1,6 +1,7 @@
 import { RECYCLABLE_ERRORS, RECYCLABLE_SUCCESS, RECYCLABLE_STATUS } from "../../constants/recyclable.constants.js";
 import { updateRecyclableSchema } from "../../validation/recyclable.schema.js";
 import { getRecyclableRequestById, updateRecyclableRequest } from "../../repositories/collectorRepository/collectorRepo.js";
+import { _calculate_waste_recycle_coin } from "../../functions/_calculate_recycle_coin.js";
 
 /**
  * Validates UUID format
@@ -92,11 +93,26 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
                 break;
         }
 
+        // Transform existing request data
+        const transformedExisting = {
+            id: existingRequest.recyclable_collect_request_id,
+            userId: existingRequest.user_id,
+            areaId: existingRequest.area_id,
+            status: existingRequest.status,
+            type: existingRequest.type,
+            category: existingRequest.category,
+            weight: existingRequest.weight,
+            createdAt: existingRequest.created_at,
+            updatedAt: existingRequest.updated_at,
+            users: existingRequest.users,
+            area: existingRequest.area
+        };
+
         return {
             ok: true,
             status: 200,
             message,
-            data: existingRequest
+            data: transformedExisting
         };
     }
 
@@ -112,11 +128,62 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
         };
     }
 
-    // Step 7: Return success
+    console.log("Updated recyclable request:", validation.data);
+
+    // Step 7: Calculate and award recycle coins (only if status is COMPLETED)
+
+    try {
+        const recycle_coin_amount = await _calculate_waste_recycle_coin(validation.data.category, validation.data.weight);
+        console.log("Calculated recycle coin amount:", recycle_coin_amount);
+
+        if (recycle_coin_amount > 0) {
+            // Call the recycle coin update endpoint
+            const response = await fetch('http://localhost:8000/api/recycle_coin/update-recycle-coin-balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: data.user_id,
+                    transaction_type: 'earn',
+                    amount: recycle_coin_amount
+                })
+            });
+            console.log("Recycle coin service response status:", response)
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error("❌ Failed to update recycle coin balance:", errorData);
+                // Don't fail the whole operation
+            } else {
+                const coinData = await response.json();
+                console.log(`✅ Successfully awarded ${recycle_coin_amount} recycle coins to user ${data.user_id}`);
+                console.log("Recycle coin response:", coinData);
+            }
+        }
+    } catch (coinError) {
+        console.error("❌ Error processing recycle coins:", coinError);
+        // Don't fail the whole operation if coin update fails
+    }
+
+
+    // Step 8: Transform data to match frontend expectations
+    const transformedData = {
+        id: data.recyclable_collect_request_id,
+        userId: data.user_id,
+        areaId: data.area_id,
+        status: data.status,
+        type: data.type,
+        category: data.category,
+        weight: data.weight,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+    };
+
+    // Step 9: Return success with transformed data
     return {
         ok: true,
         status: 200,
         message: RECYCLABLE_SUCCESS.REQUEST_UPDATED,
-        data
+        data: transformedData
     };
 }

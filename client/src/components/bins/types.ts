@@ -11,12 +11,14 @@ export interface Bin {
   qrCodeLink?: string; // QR code link for the bin (optional for backward compatibility)
 }
 
-export type HistoryStatus = 'PENDING' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
+export type HistoryStatus = string; // Allow any status from server
 
 export interface BinHistoryRow {
-  dateTime: string;
-  status: HistoryStatus;
-  notes?: string;
+  full_bin_id: string;
+  bin_id: string;
+  request_status: string;
+  updated_at: string | null;
+  created_at: string;
 }
 
 // Centralized status -> style mapping (avoids magic strings)

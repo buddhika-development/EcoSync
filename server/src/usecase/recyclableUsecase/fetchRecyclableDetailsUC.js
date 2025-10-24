@@ -58,11 +58,26 @@ export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
         };
     }
 
-    // Step 4: Return success
+    // Step 4: Transform data to match frontend expectations
+    const transformedRequest = {
+        id: request.recyclable_collect_request_id,
+        userId: request.user_id,
+        areaId: request.area_id,
+        status: request.status,
+        type: request.type,
+        category: request.category,
+        weight: request.weight,
+        createdAt: request.created_at,
+        updatedAt: request.updated_at,
+        users: request.users,
+        area: request.area
+    };
+
+    // Step 5: Return success with transformed data
     return {
         ok: true,
         status: 200,
         message: RECYCLABLE_SUCCESS.REQUEST_FETCHED,
-        data: request
+        data: transformedRequest
     };
 }

@@ -133,7 +133,7 @@ export default function RecyclableDetailsPage() {
                 </button>
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Request Details</h1>
-                    <p className="text-gray-600">ID: {request.recyclable_collect_request_id}</p>
+                    <p className="text-gray-600">ID: {request.id}</p>
                 </div>
             </div>
 
@@ -184,7 +184,7 @@ export default function RecyclableDetailsPage() {
                                     <Calendar className="w-5 h-5 text-gray-600" />
                                     <div>
                                         <p className="text-xs text-gray-500">Created</p>
-                                        <p className="text-sm font-medium text-gray-900">{formatDate(request.created_at)}</p>
+                                        <p className="text-sm font-medium text-gray-900">{formatDate(request.createdAt)}</p>
                                     </div>
                                 </div>
 
@@ -192,7 +192,7 @@ export default function RecyclableDetailsPage() {
                                     <Clock className="w-5 h-5 text-gray-600" />
                                     <div>
                                         <p className="text-xs text-gray-500">Last Updated</p>
-                                        <p className="text-sm font-medium text-gray-900">{formatDate(request.updated_at)}</p>
+                                        <p className="text-sm font-medium text-gray-900">{formatDate(request.updatedAt)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -228,49 +228,53 @@ export default function RecyclableDetailsPage() {
 
                         <div className="p-6 space-y-4">
                             {/* User Avatar and Name */}
-                            <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                                    <span className="text-white font-bold text-xl">
-                                        {request.users.user_first_name.charAt(0)}
-                                        {request.users.user_last_name.charAt(0)}
-                                    </span>
-                                </div>
-                                <div>
-                                    <p className="text-lg font-bold text-gray-900">
-                                        {request.users.user_first_name} {request.users.user_last_name}
-                                    </p>
-                                    <p className="text-sm text-gray-500">Resident</p>
-                                </div>
-                            </div>
-
-                            {/* Contact Information */}
-                            <div className="space-y-3">
-                                <div>
-                                    <div className="flex items-center gap-2 text-gray-600 mb-1">
-                                        <Phone className="w-4 h-4" />
-                                        <span className="text-xs font-medium">Phone Number</span>
+                            {request.users && (
+                                <>
+                                    <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                                            <span className="text-white font-bold text-xl">
+                                                {request.users.user_first_name.charAt(0)}
+                                                {request.users.user_last_name.charAt(0)}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <p className="text-lg font-bold text-gray-900">
+                                                {request.users.user_first_name} {request.users.user_last_name}
+                                            </p>
+                                            <p className="text-sm text-gray-500">Resident</p>
+                                        </div>
                                     </div>
-                                    <a
-                                        href={`tel:${request.users.user_contact_number}`}
-                                        className="block px-4 py-2.5 bg-gray-50 hover:bg-green-50 rounded-lg text-sm font-medium text-gray-900 hover:text-green-700 transition-colors"
-                                    >
-                                        {request.users.user_contact_number}
-                                    </a>
-                                </div>
 
-                                <div>
-                                    <div className="flex items-center gap-2 text-gray-600 mb-1">
-                                        <Mail className="w-4 h-4" />
-                                        <span className="text-xs font-medium">Email Address</span>
+                                    {/* Contact Information */}
+                                    <div className="space-y-3">
+                                        <div>
+                                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                                                <Phone className="w-4 h-4" />
+                                                <span className="text-xs font-medium">Phone Number</span>
+                                            </div>
+                                            <a
+                                                href={`tel:${request.users.user_contact_number}`}
+                                                className="block px-4 py-2.5 bg-gray-50 hover:bg-green-50 rounded-lg text-sm font-medium text-gray-900 hover:text-green-700 transition-colors"
+                                            >
+                                                {request.users.user_contact_number}
+                                            </a>
+                                        </div>
+
+                                        <div>
+                                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                                                <Mail className="w-4 h-4" />
+                                                <span className="text-xs font-medium">Email Address</span>
+                                            </div>
+                                            <a
+                                                href={`mailto:${request.users.user_email_address}`}
+                                                className="block px-4 py-2.5 bg-gray-50 hover:bg-green-50 rounded-lg text-sm font-medium text-gray-900 hover:text-green-700 transition-colors break-all"
+                                            >
+                                                {request.users.user_email_address}
+                                            </a>
+                                        </div>
                                     </div>
-                                    <a
-                                        href={`mailto:${request.users.user_email_address}`}
-                                        className="block px-4 py-2.5 bg-gray-50 hover:bg-green-50 rounded-lg text-sm font-medium text-gray-900 hover:text-green-700 transition-colors break-all"
-                                    >
-                                        {request.users.user_email_address}
-                                    </a>
-                                </div>
-                            </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

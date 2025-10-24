@@ -57,11 +57,25 @@ export default async function fetchAllRecyclablesUC(collectorId) {
         };
     }
 
-    // Step 4: Return success with data
+    // Step 4: Transform data to match frontend expectations
+    const transformedRequests = (requests || []).map(request => ({
+        id: request.recyclable_collect_request_id,
+        userId: request.user_id,
+        areaId: request.area_id,
+        status: request.status,
+        type: request.type,
+        category: request.category,
+        weight: request.weight,
+        createdAt: request.created_at,
+        updatedAt: request.updated_at,
+        users: request.users
+    }));
+
+    // Step 5: Return success with transformed data
     return {
         ok: true,
         status: 200,
         message: RECYCLABLE_SUCCESS.REQUESTS_FETCHED,
-        data: requests || []
+        data: transformedRequests
     };
 }

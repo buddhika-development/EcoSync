@@ -5,14 +5,13 @@
 
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { useAreas } from "@/hooks/useAreas";
 
 export type RequestStatus = "Pending" | "Scheduled" | "Completed" | "Cancelled";
 export type RequestType = "Pickup" | "Drop-off";
 
-const CATEGORIES = ["Paper", "Glass", "Plastic", "Organic", "Metal", "E-waste"] as const;
-const AREAS = ["Colombo 01", "Colombo 02", "Kandy", "Galle", "Matara", "Jaffna"]; // dummy names only
-
+const CATEGORIES = ["paper-waste", "metal-waste", "plastic-waste", "e-waste"] as const;
 type Category = (typeof CATEGORIES)[number];
 
 export interface NewRequestForm {
@@ -30,6 +29,7 @@ interface Props {
 }
 
 export default function RecyclableRequestModal({ open, onClose, onSubmit }: Props) {
+  const { areas, loading: areasLoading, error: areasError } = useAreas();
   const [form, setForm] = useState<NewRequestForm>({
     categories: [],
     type: "Pickup",
@@ -109,15 +109,16 @@ export default function RecyclableRequestModal({ open, onClose, onSubmit }: Prop
           {/* Category */}
           <section>
             <p className="text-sm font-semibold text-gray-800">Category</p>
-            <p className="text-xs text-gray-500 mb-3">Select all that apply.</p>
+            <p className="text-xs text-gray-500 mb-3">Select one category for recyclable collection.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3">
               {CATEGORIES.map((c) => (
                 <label key={c} className="flex items-center gap-3 cursor-pointer">
                   <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                    type="radio"
+                    name="category"
+                    className="h-4 w-4 border-gray-300 text-emerald-600 focus:ring-emerald-500"
                     checked={form.categories.includes(c)}
-                    onChange={() => toggleCategory(c)}
+                    onChange={() => setForm(f => ({ ...f, categories: [c] }))}
                   />
                   <span className="text-sm text-gray-700">{c}</span>
                 </label>
@@ -149,18 +150,29 @@ export default function RecyclableRequestModal({ open, onClose, onSubmit }: Prop
             <div>
               <p className="text-sm font-semibold text-gray-800 mb-2">Area</p>
               <div className="relative">
-                <select
-                  value={form.area}
-                  onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
-                >
-                  <option value="">Select an area</option>
-                  {AREAS.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
+                {areasLoading ? (
+                  <div className="flex items-center justify-center py-2">
+                    <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
+                  </div>
+                ) : areasError ? (
+                  <div className="text-sm text-red-600 py-2">
+                    Failed to load areas. Please try again.
+                  </div>
+                ) : (
+                  <select
+                    value={form.area}
+                    onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                    disabled={areasLoading}
+                  >
+                    <option value="">Select an area</option>
+                    {areas.map((area) => (
+                      <option key={area.area_id} value={area.area_id}>
+                        {area.area_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
 

@@ -7,7 +7,7 @@ import { GetMyRecyclableRequestsUseCase } from '../../usecase/recyclablesUsecase
  */
 export async function GetMyRecyclableRequestsController(req, res) {
   try {
-    const userId = req?.user?.id;
+    const userId = req?.user?.uid;
     if (!userId) return fail(res, 'Unauthorized', 401);
 
     // Optional, safe filters (no pagination per your preference)
