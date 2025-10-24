@@ -24,7 +24,7 @@ export async function GetAdminBinsUseCase(query) {
     id: b.bin_id,
     lat: Number(b.latitude),
     lng: Number(b.longitude),
-    areaId: b.area_id,
+    areaName: b.area?.area_name || null, 
     userId: b.user_id,
     status: b.bin_status,
     createdAt: b.created_at,
