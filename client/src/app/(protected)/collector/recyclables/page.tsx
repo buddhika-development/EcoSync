@@ -47,7 +47,7 @@ export default function CollectorRecyclables() {
                 request.users?.user_last_name?.toLowerCase().includes(searchLower) ||
                 request.users?.user_email_address?.toLowerCase().includes(searchLower) ||
                 request.users?.user_contact_number?.includes(searchQuery) ||
-                request.id.toLowerCase().includes(searchLower);
+                (request.id && String(request.id).toLowerCase().includes(searchLower));
 
             // Status filter
             const matchesStatus = statusFilter === 'ALL' || request.status === statusFilter;
@@ -171,8 +171,8 @@ export default function CollectorRecyclables() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredRequests.map((request) => (
-                        <RecyclableRequestCard key={request.id} request={request} />
+                    {filteredRequests.map((request, index) => (
+                        <RecyclableRequestCard key={request.id || `request-${index}`} request={request} />
                     ))}
                 </div>
             )}

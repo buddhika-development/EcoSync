@@ -93,11 +93,26 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
                 break;
         }
 
+        // Transform existing request data
+        const transformedExisting = {
+            id: existingRequest.recyclable_collect_request_id,
+            userId: existingRequest.user_id,
+            areaId: existingRequest.area_id,
+            status: existingRequest.status,
+            type: existingRequest.type,
+            category: existingRequest.category,
+            weight: existingRequest.weight,
+            createdAt: existingRequest.created_at,
+            updatedAt: existingRequest.updated_at,
+            users: existingRequest.users,
+            area: existingRequest.area
+        };
+
         return {
             ok: true,
             status: 200,
             message,
-            data: existingRequest
+            data: transformedExisting
         };
     }
 
@@ -151,11 +166,24 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
     }
 
 
-    // Step 8: Return success
+    // Step 8: Transform data to match frontend expectations
+    const transformedData = {
+        id: data.recyclable_collect_request_id,
+        userId: data.user_id,
+        areaId: data.area_id,
+        status: data.status,
+        type: data.type,
+        category: data.category,
+        weight: data.weight,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+    };
+
+    // Step 9: Return success with transformed data
     return {
         ok: true,
         status: 200,
         message: RECYCLABLE_SUCCESS.REQUEST_UPDATED,
-        data
+        data: transformedData
     };
 }
