@@ -50,8 +50,8 @@ export default function AdminSidebar() {
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center space-x-3">
-            <Image src="/logo.png" alt="EcoSync Logo" width={32} height={32} className="rounded" />
-            <span className="text-lg font-semibold text-gray-800">EcoSync</span>
+            <Image src="/logo.png" alt="EcoSync Logo" width={140} height={140} className="rounded" />
+            
           </div>
         )}
         {isCollapsed && (
