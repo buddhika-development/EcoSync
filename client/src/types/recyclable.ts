@@ -17,16 +17,17 @@ export interface RecyclableRequestArea {
 }
 
 export interface RecyclableRequest {
-    recyclable_collect_request_id: string;
-    user_id: string;
-    area_id: string;
+    id: string;
+    userId: string;
+    areaId: string;
     status: RecyclableStatus;
     type: RecyclableType;
     category: RecyclableCategory;
     weight: number;
-    created_at: string;
-    updated_at: string;
-    users: RecyclableRequestUser;
+    createdAt: string;
+    updatedAt: string;
+    users?: RecyclableRequestUser;
+    area?: RecyclableRequestArea;
 }
 
 export interface RecyclableRequestDetail extends RecyclableRequest {
@@ -88,3 +89,28 @@ export const RECYCLABLE_TYPE_LABELS: Record<RecyclableType, string> = {
     PICKUP: 'Pickup',
     'DROP-OFF': 'Drop-off',
 };
+
+// Types for creating recyclable requests
+export interface CreateRecyclableRequestPayload {
+    user_id: string;
+    area_id: string;
+    type: RecyclableType;
+    category: RecyclableCategory;
+    weight: number;
+}
+
+export interface CreateRecyclableRequestResponse {
+    ok: boolean;
+    message: string;
+    data: {
+        recyclable_collect_request_id: string;
+        user_id: string;
+        area_id: string;
+        status: RecyclableStatus;
+        type: RecyclableType;
+        category: RecyclableCategory;
+        weight: number;
+        created_at: string;
+        updated_at: string;
+    };
+}

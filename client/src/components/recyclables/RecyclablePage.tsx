@@ -1,88 +1,208 @@
 // ✅ Composition Root: orchestrates smaller components (no business logic here)
+// ✅ Single Responsibility: Only handles component composition and state management
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ArrowLeft } from "lucide-react";
 import RecyclableCard from "./RecyclableCard";
 import RecyclableFilters from "./RecyclableFilters";
-import RecyclableRequestModal, { NewRequestForm } from "./RecyclableRequestModal";
+import RecyclableAdvancedFilters from "./RecyclableAdvancedFilters";
+import RecyclableRequestForm from "./RecyclableRequestForm";
+import useCurrentUserId from "@/hooks/useCurrentUserId";
+import { fetchRecyclableRequestsHistory } from "@/services/recyclableRequests.service";
+import type { RecyclableRequest, RecyclableStatus, RecyclableType, RecyclableCategory } from "@/types/recyclable";
 
-const dummyRecyclables = [
-  {
-    id: "REC-1045",
-    requestedDate: "2024-05-21",
-    type: "Pickup",
-    category: ["Plastic", "Paper"],
-    weight: 5.2,
-    status: "Completed" as const,
-  },
-  {
-    id: "REC-1046",
-    requestedDate: "2024-05-22",
-    type: "Pickup",
-    category: ["E-waste"],
-    weight: 12,
-    status: "Scheduled" as const,
-  },
-  {
-    id: "REC-1047",
-    requestedDate: "2024-05-23",
-    type: "Drop-off",
-    category: ["Glass", "Metal"],
-    weight: 8.5,
-    status: "Pending" as const,
-  },
-  {
-    id: "REC-1048",
-    requestedDate: "2024-05-19",
-    type: "Pickup",
-    category: ["Organic"],
-    weight: 3.1,
-    status: "Cancelled" as const,
-  },
-];
+export default function RecyclablePage() {
+  const userId = useCurrentUserId();
+  const [status, setStatus] = useState<RecyclableStatus | 'All'>("All");
+  const [type, setType] = useState<RecyclableType | 'All'>("All");
+  const [category, setCategory] = useState<RecyclableCategory | 'All'>("All");
+  const [showForm, setShowForm] = useState(false);
+  const [recyclables, setRecyclables] = useState<RecyclableRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
-export default function RecyclablePage(): React.ReactNode {
-  const [status, setStatus] = useState<string>("All");
-  const [open, setOpen] = useState(false);
+  // Check if userId is available
+  useEffect(() => {
+    if (userId !== null) {
+      setUserLoading(false);
+      console.log('[RecyclablePage] User ID loaded:', userId);
+    }
+  }, [userId]);
 
-  const filteredRecyclables = useMemo(() => {
-    if (status === "All") return dummyRecyclables;
-    return dummyRecyclables.filter((r) => r.status === status);
-  }, [status]);
+  /**
+   * Fetch recyclable requests with applied filters
+   * ✅ Dependency Inversion: Uses service abstraction
+   */
+  const fetchRecyclables = useCallback(async () => {
+    if (!userId) return;
 
-  const submitNewRequest = (payload: NewRequestForm) => {
-    // 🚧 Frontend-only: stub the action; integrate API later.
-    // console.log keeps side effects out of UI components.
-    console.log("NEW REQUEST (dummy submit):", payload);
+    setLoading(true);
+    try {
+      // Build filters object (only include non-"All" values)
+      const filters: {
+        status?: RecyclableStatus;
+        type?: RecyclableType;
+        category?: RecyclableCategory;
+      } = {};
+
+      if (status !== "All") filters.status = status;
+      if (type !== "All") filters.type = type;
+      if (category !== "All") filters.category = category;
+
+      const response = await fetchRecyclableRequestsHistory(filters);
+
+      if (response.ok && response.data) {
+        setRecyclables(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch recyclables:", error);
+      setRecyclables([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, status, type, category]);
+
+  // Fetch data when filters change
+  useEffect(() => {
+    fetchRecyclables();
+  }, [fetchRecyclables]);
+
+  /**
+   * Handle successful form submission
+   * ✅ Single Responsibility: Only handles post-creation actions
+   */
+  const handleFormSuccess = () => {
+    fetchRecyclables();
+    setTimeout(() => {
+      setShowForm(false);
+    }, 2000);
   };
 
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    setStatus("All");
+    setType("All");
+    setCategory("All");
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = status !== "All" || type !== "All" || category !== "All";
+
+  // Show loading while user data is being fetched
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading user information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 font-medium">Unable to load user information</p>
+          <p className="text-gray-500 text-sm mt-2">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show form view
+  if (showForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+        <div className="max-w-3xl mx-auto">
+          <button
+            onClick={() => setShowForm(false)}
+            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="font-medium">Back to Requests</span>
+          </button>
+
+          <RecyclableRequestForm
+            userId={userId}
+            onSuccess={handleFormSuccess}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Show list view with filters
   return (
     <div className="min-h-screen bg-emerald-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Recyclables</h1>
-          <button 
-            onClick={() => setOpen(true)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm"
-          >
-            + New Recyclable Request
-          </button>
-        </header>
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">My Recyclables</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            {recyclables.length} {recyclables.length === 1 ? 'request' : 'requests'} found
+          </p>
+        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors"
+        >
+          + New Recyclable Request
+        </button>
+      </header>
 
-        <RecyclableFilters activeStatus={status} onStatusChange={setStatus} />
+      {/* Filters Section */}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 space-y-4">
+        {/* Header with Clear Button */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-800">Filter Requests</h2>
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearFilters}
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+            >
+              Clear All Filters
+            </button>
+          )}
+        </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecyclables.map((rec) => (
+        {/* Status Filters */}
+        <RecyclableFilters activeStatus={status} onStatusChange={(s) => setStatus(s as RecyclableStatus | 'All')} />
+
+        {/* Advanced Filters */}
+        <RecyclableAdvancedFilters
+          selectedType={type}
+          selectedCategory={category}
+          onTypeChange={setType}
+          onCategoryChange={setCategory}
+        />
+      </div>
+
+      {/* Results */}
+      {loading ? (
+        <div className="mt-8 flex justify-center">
+          <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+        </div>
+      ) : recyclables.length === 0 ? (
+        <div className="mt-8 bg-white rounded-xl shadow-sm p-12 text-center max-w-2xl mx-auto">
+          <p className="text-gray-500 text-lg mb-2">No recyclable requests found</p>
+          <p className="text-gray-400 text-sm">
+            {hasActiveFilters
+              ? "Try adjusting your filters"
+              : "Click 'New Recyclable Request' to get started"}
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center max-w-7xl mx-auto">
+          {recyclables.map((rec) => (
             <RecyclableCard key={rec.id} {...rec} />
           ))}
         </div>
-      </div>
-
-      <RecyclableRequestModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onSubmit={submitNewRequest}
-      />
+      )}
     </div>
   );
 }
