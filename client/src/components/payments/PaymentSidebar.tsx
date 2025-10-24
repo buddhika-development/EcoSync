@@ -42,6 +42,7 @@ const PaymentSidebar: React.FC<Props> = ({
   const [loadingCards, setLoadingCards] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'error' | 'success' | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -178,46 +179,73 @@ const PaymentSidebar: React.FC<Props> = ({
           </section>
 
           <section className="pt-4 border-t border-t-zinc-300">
-            <h4 className="font-medium mb-2 font-poppins font-semibold text-green-900">Add new card</h4>
-            <div className="space-y-2">
-              <input
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                placeholder="Card number"
-                className="w-full p-2 border rounded font-poppins placeholder:text-sm"
-              />
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  value={cvc}
-                  onChange={(e) => setCvc(e.target.value)}
-                  placeholder="CVC"
-                  className="p-2 border rounded font-poppins placeholder:text-sm"
-                />
-                <input
-                  value={cardOnName}
-                  onChange={(e) => setCardOnName(e.target.value)}
-                  placeholder="Name on card"
-                  className="p-2 border rounded font-poppins placeholder:text-sm"
-                />
-              </div>
-              <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+              {!showAddForm ? (
+                // full-width clickable header to reveal the form
                 <button
-                    onClick={handleAddCard}
-                    className="px-4 py-2 text-white rounded bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-poppins text-sm"
-                    disabled={!cardNumber || !cvc || !cardOnName}
+                  type="button"
+                  onClick={() => { setShowAddForm(true); setMessage(null); setMessageType(null); }}
+                  className="w-full text-left p-2 rounded hover:bg-zinc-50 flex items-center justify-between"
+                  aria-expanded={showAddForm}
                 >
-                    Add Card
+                  <span className="mb-0 font-poppins font-semibold text-green-900">Add new card</span>
+                  <span className="text-sm text-blue-600 font-poppins">Tap to add</span>
                 </button>
-              </div>
-              {message && (
-                <div
-                  role="status"
-                  className={`mt-2 text-sm text-center font-poppins border-[1px] rounded-lg h-[46px] flex items-center justify-center mt-4 ${messageType === 'success' ? 'text-green-800 bg-green-100 border-green-200' : 'text-red-800 bg-red-100 border-red-200'}`}
-                >
-                  {message}
+              ) : (
+                <div className="w-full flex items-center justify-between">
+                  <h4 className="mb-0 font-poppins font-semibold text-green-900">Add new card</h4>
+                  <button
+                    type="button"
+                    className="text-sm text-gray-600 underline font-poppins"
+                    onClick={() => { setShowAddForm(false); setCardNumber(''); setCvc(''); setCardOnName(''); setMessage(null); setMessageType(null); }}
+                  >
+                    Cancel
+                  </button>
                 </div>
               )}
             </div>
+
+            {showAddForm && (
+              <div className="space-y-2 mt-2">
+                <input
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  placeholder="Card number"
+                  className="w-full p-2 border rounded font-poppins placeholder:text-sm"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    value={cvc}
+                    onChange={(e) => setCvc(e.target.value)}
+                    placeholder="CVC"
+                    className="p-2 border rounded font-poppins placeholder:text-sm"
+                  />
+                  <input
+                    value={cardOnName}
+                    onChange={(e) => setCardOnName(e.target.value)}
+                    placeholder="Name on card"
+                    className="p-2 border rounded font-poppins placeholder:text-sm"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                      onClick={handleAddCard}
+                      className="px-4 py-2 text-white rounded bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-poppins text-sm"
+                      disabled={!cardNumber || !cvc || !cardOnName}
+                  >
+                      Add Card
+                  </button>
+                </div>
+                {message && (
+                  <div
+                    role="status"
+                    className={`text-sm text-center font-poppins border-[1px] rounded-lg h-[46px] flex items-center justify-center mt-4 ${messageType === 'success' ? 'text-green-800 bg-green-100 border-green-200' : 'text-red-800 bg-red-100 border-red-200'}`}
+                  >
+                    {message}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         </div>
 
