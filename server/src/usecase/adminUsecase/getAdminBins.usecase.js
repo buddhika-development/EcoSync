@@ -3,7 +3,7 @@ import { AdminBinRepository } from "../../repositories/adminRepository/admin.bin
 const VALID_STATUSES = ["FULL", "EMPTY"];
 
 export async function GetAdminBinsUseCase(query) {
-  const { status, areaId, search } = query ?? {};
+  const { status, areaId, areaName, search } = query ?? {};
 
   // Basic validation
   if (status && !VALID_STATUSES.includes(status.toUpperCase())) {
@@ -16,6 +16,7 @@ export async function GetAdminBinsUseCase(query) {
   const result = await AdminBinRepository.findBins({
     status: status ? status.toUpperCase() : undefined,
     areaId,
+    areaName,
     search,
   });
 
