@@ -185,7 +185,6 @@ export default function Page() {
               <BinCard
                 key={bin.id}
                 bin={bin}
-                history={[]}
                 onMarkFull={handleMarkFull}
                 onViewQr={handleViewQr}
               />
