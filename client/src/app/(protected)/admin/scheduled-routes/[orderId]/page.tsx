@@ -68,21 +68,6 @@ export default function RouteDetailPage() {
   // All tasks without filtering - showing complete route information
   const tasks = routeDetail?.tasks || [];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'SCHEDULED':
-        return 'bg-blue-100 text-blue-800';
-      case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -136,9 +121,6 @@ export default function RouteDetailPage() {
             <h1 className="text-2xl font-bold text-gray-800">Route Details</h1>
             <p className="text-gray-600 mt-1">Route ID: {routeDetail.orderId}</p>
           </div>
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(routeDetail.derivedStatus)}`}>
-            {routeDetail.derivedStatus}
-          </span>
         </div>
       </div>
 
