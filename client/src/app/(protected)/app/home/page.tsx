@@ -35,6 +35,46 @@ function mapApiToUi(row: ApiBinRow): Bin {
   };
 }
 
+// Inline status filter chips (All, Empty, Full) — no "Normal"
+function StatusChips({
+  value,
+  onChange,
+}: {
+  value: 'ALL' | BinStatus;
+  onChange: (v: 'ALL' | BinStatus) => void;
+}) {
+  const options: Array<{ key: 'ALL' | BinStatus; label: string }> = [
+    { key: 'ALL', label: 'All' },
+    { key: 'EMPTY', label: 'Empty' },
+    { key: 'FULL', label: 'Full' },
+  ];
+
+  return (
+    <div className="flex items-center gap-3">
+      {options.map(({ key, label }) => {
+        const active = value === key;
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onChange(key)}
+            className={[
+              'px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm',
+              active
+                ? 'bg-gradient-to-r from-emerald-500 to-green-400 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+            ].join(' ')}
+            aria-pressed={active}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+
 export default function Page() {
   const userId = useCurrentUserId();
   const [filter, setFilter] = useState<'ALL' | BinStatus>('ALL');
@@ -84,33 +124,62 @@ export default function Page() {
     }
   }, [bins]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       setLoading(true);
+  //       setError(null);
 
-        const qs = new URLSearchParams();
-        if (filter !== 'ALL') qs.set('status', filter);
-        qs.set('page', '1');
-        qs.set('pageSize', '50');
-        const res = await api('/api/bins/my');
-        const body = await res.json();
-        if (!res.ok || body?.ok === false) {
-          throw new Error(body?.errors?.message || body?.message || 'Failed to load bins');
-        }
+  //       const qs = new URLSearchParams();
+  //       if (filter !== 'ALL') qs.set('status', filter);
+  //       qs.set('page', '1');
+  //       qs.set('pageSize', '50');
+  //       const res = await api('/api/bins/my');
+  //       const body = await res.json();
+  //       if (!res.ok || body?.ok === false) {
+  //         throw new Error(body?.errors?.message || body?.message || 'Failed to load bins');
+  //       }
 
-        const items: ApiBinRow[] = body?.data?.items ?? [];
-        setBins(items.map(mapApiToUi));
-      } catch (e: any) {
-        setError(e.message ?? 'Could not fetch bins');
-      } finally {
-        setLoading(false);
+  //       const items: ApiBinRow[] = body?.data?.items ?? [];
+  //       setBins(items.map(mapApiToUi));
+  //     } catch (e: any) {
+  //       setError(e.message ?? 'Could not fetch bins');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   })();
+  // }, [userId, filter]);
+
+  // Change this effect's dependency array and body
+useEffect(() => {
+  (async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch all bins once; filter is applied client-side
+      const res = await api('/api/bins/my');
+      const body = await res.json();
+      if (!res.ok || body?.ok === false) {
+        throw new Error(body?.errors?.message || body?.message || 'Failed to load bins');
       }
-    })();
-  }, [userId, filter]);
 
-  const filteredBins = useMemo(() => bins, [bins]);
+      const items: ApiBinRow[] = body?.data?.items ?? [];
+      setBins(items.map(mapApiToUi));
+    } catch (e: any) {
+      setError(e.message ?? 'Could not fetch bins');
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [userId]); // ⬅️ remove `filter` here
+
+
+  // const filteredBins = useMemo(() => bins, [bins]);
+  const filteredBins = useMemo(() => {
+    if (filter === 'ALL') return bins;
+    return bins.filter(b => b.status === filter);
+  }, [bins, filter]);
 
   console.log('[MyBins] userId =', userId);
 
@@ -169,11 +238,11 @@ export default function Page() {
             </div>
           )}
 
-          {/* === Search Bar === */}
+          
           <div className="mb-10">
-            <MyBinsToolbar
-              activeFilter={filter}
-              onChangeFilter={(val) => setFilter(val as 'ALL' | BinStatus)}
+            <StatusChips
+              value={filter}
+              onChange={(val) => setFilter(val as 'ALL' | BinStatus)}
             />
           </div>
 
