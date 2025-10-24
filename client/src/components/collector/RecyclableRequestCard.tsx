@@ -41,7 +41,7 @@ export default function RecyclableRequestCard({ request }: RecyclableRequestCard
                             <span className="text-2xl">{categoryIcon}</span>
                             <h3 className="text-lg font-semibold text-gray-900">{categoryLabel}</h3>
                         </div>
-                        <p className="text-sm text-gray-600">Request ID: {request.id.slice(0, 8)}...</p>
+                        <p className="text-sm text-gray-600">Request ID: {request.id ? String(request.id).slice(0, 8) : 'N/A'}...</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
                         <span
