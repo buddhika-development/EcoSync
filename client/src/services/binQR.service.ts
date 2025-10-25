@@ -39,6 +39,7 @@ export interface BinStatusUpdateRequest {
     bin_status: 'EMPTY' | 'FULL';
     full_bin_status: 'COLLECTED' | 'CANCELLED';
     order_id: string;
+    full_bin_id?: string; // Optional: UUID of the full bin record
 }
 
 /**
@@ -131,16 +132,19 @@ class BinQRService {
      * 
      * @param binId - UUID of the bin
      * @param orderId - UUID of the pickup order
+     * @param fullBinId - UUID of the full bin record
      * @returns Update result
      */
     async markBinCollected(
         binId: string,
-        orderId: string
+        orderId: string,
+        fullBinId: string
     ): Promise<BinStatusUpdateResponse> {
         return this.updateBinStatus(binId, {
             bin_status: 'EMPTY',
             full_bin_status: 'COLLECTED',
             order_id: orderId,
+            full_bin_id: fullBinId
         });
     }
 

@@ -180,7 +180,8 @@ export default function QRScannerModal({
         try {
             const result = await binQRService.markBinCollected(
                 bin.bin_id,
-                bin.order_id
+                bin.order_id,
+                bin.full_bin_id
             );
 
             if (result.ok) {

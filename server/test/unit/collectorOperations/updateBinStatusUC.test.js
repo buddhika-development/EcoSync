@@ -33,6 +33,7 @@ describe('updateBinStatusUC', () => {
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const orderId = '2bf5df38-b6fd-4598-9702-13520c8480bf';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567-8901';
         const full_bin_status = 'COLLECTED';
 
         const mockCurrentBin = {
@@ -42,7 +43,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567-8901',
+            full_bin_id: full_bin_id,
             bin_id: binId,
             request_status: 'PENDING'
         };
@@ -66,7 +67,7 @@ describe('updateBinStatusUC', () => {
         updatePickupTaskCleared.mockResolvedValue({ error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId, orderId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId, orderId);
 
         // Assert
         expect(result).toBeDefined();
@@ -89,10 +90,11 @@ describe('updateBinStatusUC', () => {
         const invalidBinId = 'not-a-valid-uuid';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567-8901';
         const full_bin_status = 'COLLECTED';
 
         // Act
-        const result = await updateBinStatusUC(invalidBinId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(invalidBinId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -110,12 +112,13 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567-8901';
         const full_bin_status = 'COLLECTED';
 
         getBinStatusById.mockResolvedValue({ data: null, error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -133,6 +136,7 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const invalid_bin_status = 'INVALID_STATUS';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'COLLECTED';
 
         const mockCurrentBin = {
@@ -141,7 +145,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -149,7 +153,7 @@ describe('updateBinStatusUC', () => {
         getFullBinStatusByBinId.mockResolvedValue({ data: mockCurrentFullBin, error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, invalid_bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, invalid_bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -167,6 +171,7 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567';
         const invalid_full_bin_status = 'INVALID_STATUS';
 
         const mockCurrentBin = {
@@ -175,7 +180,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -183,7 +188,7 @@ describe('updateBinStatusUC', () => {
         getFullBinStatusByBinId.mockResolvedValue({ data: mockCurrentFullBin, error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, invalid_full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, invalid_full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -201,6 +206,7 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'COLLECTED';
 
         const mockCurrentBin = {
@@ -209,7 +215,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -221,7 +227,7 @@ describe('updateBinStatusUC', () => {
         });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -240,6 +246,7 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'COLLECTED';
 
         const mockCurrentBin = {
@@ -248,7 +255,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -266,7 +273,7 @@ describe('updateBinStatusUC', () => {
         });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -285,6 +292,7 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'COLLECTED';
 
         const mockCurrentBin = {
@@ -293,7 +301,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             bin_id: binId,
             request_status: 'COLLECTED'
         };
@@ -302,7 +310,7 @@ describe('updateBinStatusUC', () => {
         getFullBinStatusByBinId.mockResolvedValue({ data: mockCurrentFullBin, error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -324,8 +332,8 @@ describe('updateBinStatusUC', () => {
         const binId = 'b4a5f876-1234-5678-9abc-def012345678';
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const bin_status = 'EMPTY';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'COLLECTED';
-        // No orderId provided
 
         const mockCurrentBin = {
             bin_id: binId,
@@ -333,7 +341,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -353,7 +361,7 @@ describe('updateBinStatusUC', () => {
         updateFullBinStatus.mockResolvedValue({ data: mockUpdatedFullBin, error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId);
 
         // Assert
         expect(result).toBeDefined();
@@ -372,6 +380,7 @@ describe('updateBinStatusUC', () => {
         const collectorId = '8598c0cf-d287-4495-bb18-e61a7773d635';
         const orderId = '2bf5df38-b6fd-4598-9702-13520c8480bf';
         const bin_status = 'UNAVAILABLE';
+        const full_bin_id = 'f123-4567';
         const full_bin_status = 'CANCELLED';
 
         const mockCurrentBin = {
@@ -380,7 +389,7 @@ describe('updateBinStatusUC', () => {
         };
 
         const mockCurrentFullBin = {
-            full_bin_id: 'f123-4567',
+            full_bin_id: full_bin_id,
             request_status: 'PENDING'
         };
 
@@ -401,7 +410,7 @@ describe('updateBinStatusUC', () => {
         updatePickupTaskCleared.mockResolvedValue({ error: null });
 
         // Act
-        const result = await updateBinStatusUC(binId, bin_status, full_bin_status, collectorId, orderId);
+        const result = await updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId, orderId);
 
         // Assert
         expect(result).toBeDefined();

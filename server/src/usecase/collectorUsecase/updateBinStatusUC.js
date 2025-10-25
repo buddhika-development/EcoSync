@@ -37,11 +37,12 @@ function isValidUUID(id) {
  * @param {string} bin_status 
  * @param {string} full_bin_status 
  * @param {string} collectorId
- * @param {string} orderId 
+ * @param {string} order_id 
  * @returns {Promise<Object>} 
  */
-export default async function updateBinStatusUC(binId, bin_status, full_bin_status, collectorId, orderId = null) {
+export default async function updateBinStatusUC(binId, bin_status, full_bin_id, full_bin_status, collectorId, order_id = null) {
 
+    console.log("Update Bin Status UC called with:", { binId, full_bin_id, bin_status, full_bin_status, collectorId, order_id });
     if (!binId || !isValidUUID(binId)) {
         return {
             ok: false,
@@ -70,8 +71,8 @@ export default async function updateBinStatusUC(binId, bin_status, full_bin_stat
         };
     }
 
-
-    const { data: currentFullBin, error: fetchFullBinError } = await getFullBinStatusByBinId(binId);
+    console.log("Current Full Bin ID", full_bin_id)
+    const { data: currentFullBin, error: fetchFullBinError } = await getFullBinStatusByBinId(full_bin_id);
 
     if (fetchFullBinError) {
         console.error("Error fetching full bin status:", fetchFullBinError);
@@ -150,7 +151,7 @@ export default async function updateBinStatusUC(binId, bin_status, full_bin_stat
     }
 
 
-    const { data: updatedFullBin, error: fullBinError } = await updateFullBinStatus(binId, fullBinStatusValue);
+    const { data: updatedFullBin, error: fullBinError } = await updateFullBinStatus(full_bin_id, fullBinStatusValue);
 
     if (fullBinError) {
         console.error("Error updating full bin status:", fullBinError);
@@ -170,8 +171,8 @@ export default async function updateBinStatusUC(binId, bin_status, full_bin_stat
     }
 
 
-    if (orderId && (fullBinStatusValue === FULL_BIN_STATUS.COLLECTED || fullBinStatusValue === FULL_BIN_STATUS.CANCELLED)) {
-        const { error: taskError } = await updatePickupTaskCleared(orderId, updatedFullBin.full_bin_id);
+    if (order_id && (fullBinStatusValue === FULL_BIN_STATUS.COLLECTED || fullBinStatusValue === FULL_BIN_STATUS.CANCELLED)) {
+        const { error: taskError } = await updatePickupTaskCleared(order_id, updatedFullBin.full_bin_id);
 
         if (taskError) {
             console.warn("Warning: Could not update pickup task cleared status:", taskError);

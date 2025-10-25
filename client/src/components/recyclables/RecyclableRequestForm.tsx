@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2, Package, Recycle, MapPin, Weight, CheckCircle2, XCircle } from 'lucide-react';
+import { Trash2, Package, Recycle, MapPin, Weight, CheckCircle2, XCircle, Info, AlertCircle } from 'lucide-react';
 import { fetchAllAreas } from '@/services/areas.service';
 import { createRecyclableRequest } from '@/services/recyclableRequests.service';
 import type { Area } from '@/types/area';
@@ -262,6 +262,110 @@ export default function RecyclableRequestForm({ userId, onSuccess }: RecyclableR
                         </button>
                     </div>
                 </div>
+
+                {/* Drop-off Instructions */}
+                {formData.type === 'DROP-OFF' && (
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 animate-in slide-in-from-top duration-300">
+                        <div className="flex items-start gap-3 mb-4">
+                            <div className="p-2 bg-blue-500 rounded-lg flex-shrink-0">
+                                <Info className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-blue-900 mb-1">
+                                    Drop-off Instructions
+                                </h3>
+                                <p className="text-sm text-blue-700">
+                                    Please follow these steps for a successful drop-off
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                                    1
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        Visit the Collection Center
+                                    </p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        Go to your selected area's collection center during operating hours
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                                    2
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        Meet the Assigned Collector
+                                    </p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        Inform the collector that you've submitted a drop-off request online
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                                    3
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        Verify Weight Measurement
+                                    </p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        Watch carefully as the collector weighs your recyclables and confirm the measurement is accurate
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                                    4
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        Request Completion
+                                    </p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        The collector will mark your request as completed in their system
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                                    5
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        Check Your Dashboard
+                                    </p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        After completion, verify in your dashboard that the status shows "COMPLETED" with the correct weight
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
+                            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-xs font-semibold text-amber-900">
+                                    Important Reminder
+                                </p>
+                                <p className="text-xs text-amber-800 mt-1">
+                                    Always double-check the weight measurement and ensure you receive confirmation before leaving.
+                                    Your recycle coins will be calculated based on the final recorded weight.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Area Selection */}
                 <div>
