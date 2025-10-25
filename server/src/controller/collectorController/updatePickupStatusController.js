@@ -2,11 +2,8 @@ import { fail, okay } from "../../../libs/response.js";
 import updatePickupStatusUC from "../../usecase/collectorUsecase/updatePickupStatusUC.js";
 
 /**
- * Controller for updating pickup order status
- * SOLID: Single Responsibility - only handles HTTP request/response
- * 
- * @param {Object} req - Express request (expects req.params.orderId, req.body.status)
- * @param {Object} res - Express response
+ * @param {Object} req 
+ * @param {Object} res 
  */
 export default async function updatePickupStatusController(req, res) {
     try {

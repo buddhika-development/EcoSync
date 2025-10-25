@@ -7,5 +7,7 @@ export async function getUserByEmail(email) {
         .eq('user_email_address', email)
         .single();
 
+    console.log("user data", data);
+
     return { data, error };
 }

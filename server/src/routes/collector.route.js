@@ -8,9 +8,7 @@ import updateBinStatusController from "../controller/collectorController/updateB
 
 const collectorRouter = Router();
 
-/**
- * Rate limiter for read operations
- */
+
 const readLimiter = rateLimit({
     windowMs: 60_000, // 1 minute
     max: 60, // 60 requests per minute
@@ -19,9 +17,7 @@ const readLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-/**
- * Rate limiter for update operations
- */
+
 const updateLimiter = rateLimit({
     windowMs: 60_000, // 1 minute
     max: 30, // 30 updates per minute
@@ -30,15 +26,7 @@ const updateLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-/**
- * All routes require authentication and collector role
- * Design Pattern: Chain of Responsibility - middleware chain handles auth
- */
 
-/**
- * GET /api/collector/pickups
- * Get all pickup orders for authenticated collector
- */
 collectorRouter.get(
     '/pickups',
     readLimiter,
@@ -47,10 +35,7 @@ collectorRouter.get(
     fetchAllPickupsController
 );
 
-/**
- * GET /api/collector/pickups/:orderId
- * Get detailed bins for a specific pickup order
- */
+
 collectorRouter.get(
     '/pickups/:orderId',
     readLimiter,
@@ -59,10 +44,7 @@ collectorRouter.get(
     fetchPickupDetailsController
 );
 
-/**
- * PATCH /api/collector/pickups/:orderId/status
- * Update pickup order status (pending → in_progress → completed)
- */
+
 collectorRouter.patch(
     '/pickups/:orderId/status',
     requireAuth,
@@ -71,10 +53,7 @@ collectorRouter.patch(
     updatePickupStatusController
 );
 
-/**
- * PATCH /api/collector/bins/:binId/status
- * Update bin status when collected (FULL → EMPTY)
- */
+
 collectorRouter.patch(
     '/bins/:binId/status',
     requireAuth,

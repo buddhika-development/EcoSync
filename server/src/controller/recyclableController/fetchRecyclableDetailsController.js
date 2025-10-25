@@ -2,11 +2,8 @@ import { fail, okay } from "../../../libs/response.js";
 import fetchRecyclableDetailsUC from "../../usecase/recyclableUsecase/fetchRecyclableDetailsUC.js";
 
 /**
- * Controller for fetching specific recyclable request details
- * SOLID: Single Responsibility - only handles HTTP request/response
- * 
- * @param {Object} req - Express request (expects req.params.requestId)
- * @param {Object} res - Express response
+ * @param {Object} req 
+ * @param {Object} res 
  */
 export default async function fetchRecyclableDetailsController(req, res) {
     try {

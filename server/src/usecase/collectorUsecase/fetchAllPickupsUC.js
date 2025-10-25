@@ -2,8 +2,6 @@ import { COLLECTOR_ERRORS, COLLECTOR_SUCCESS } from "../../constants/collector.c
 import { getAllPickupOrders, getCollectorById } from "../../repositories/collectorRepository/collectorRepo.js";
 
 /**
- * Validates collector ID format
- * SOLID: Single Responsibility - only validates UUID format
  * @param {string} collectorId 
  * @returns {boolean}
  */
@@ -13,18 +11,11 @@ function isValidUUID(collectorId) {
 }
 
 /**
- * Business logic for fetching all pickup routes for a collector
- * SOLID:
- * - Single Responsibility: Only orchestrates fetching pickup orders
- * - Dependency Inversion: Depends on repository abstraction
- * 
- * Design Pattern: Use Case Pattern - encapsulates business logic
- * 
- * @param {string} collectorId - UUID of collector
- * @returns {Promise<Object>} Standardized response { ok, status, message, data?, error? }
+ * @param {string} collectorId 
+ * @returns {Promise<Object>}
  */
 export default async function fetchAllPickupsUC(collectorId) {
-    // Step 1: Validate input
+
     if (!collectorId || !isValidUUID(collectorId)) {
         return {
             ok: false,
@@ -33,7 +24,7 @@ export default async function fetchAllPickupsUC(collectorId) {
         };
     }
 
-    // Step 2: Verify collector exists and has correct role
+
     const { data: collectorData, error: collectorError } = await getCollectorById(collectorId);
 
     if (collectorError || !collectorData) {
@@ -45,7 +36,7 @@ export default async function fetchAllPickupsUC(collectorId) {
         };
     }
 
-    // Step 3: Fetch all pickup orders for this collector
+
     const { data: pickups, error: pickupsError } = await getAllPickupOrders(collectorId);
 
     if (pickupsError) {
@@ -57,7 +48,7 @@ export default async function fetchAllPickupsUC(collectorId) {
         };
     }
 
-    // Step 4: Return success with data
+
     return {
         ok: true,
         status: 200,

@@ -1,15 +1,7 @@
-/**
- * Repository for collector-related data access
- * SOLID: Single Responsibility - handles database operations for collectors and pickup routes
- * Design Pattern: Repository Pattern - encapsulates data access logic
- */
-
 import { supabase } from "../../../libs/supabase/supabase.js";
 
-// ==================== COLLECTOR QUERIES ====================
 
 /**
- * Get collector user by ID
  * @param {string} collectorId - UUID of collector
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
@@ -24,10 +16,8 @@ export async function getCollectorById(collectorId) {
     return { data, error };
 }
 
-// ==================== PICKUP ORDER QUERIES ====================
 
 /**
- * Get all pickup orders for a specific collector
  * @param {string} collectorId - UUID of collector
  * @returns {Promise<{data: Array|null, error: Object|null}>}
  */
@@ -36,16 +26,15 @@ export async function getAllPickupOrders(collectorId) {
         .from('v_collector_orders')
         .select('*')
         .eq('collector_id', collectorId)
-        .order('scheduled_date', { ascending: true, nullsFirst: false }) // closest date first
-        .order('created_at', { ascending: false }); // tie-breaker
+        .order('scheduled_date', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false });
 
     return { data, error };
 }
 
 /**
- * Get all pickup orders for a specific collector
- * @param {string} collectorId - UUID of collector
- * @param {string} orderId - UUID of pickup order
+ * @param {string} collectorId 
+ * @param {string} orderId 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function checkCollectorAndOrder(collectorId, orderId) {
@@ -60,8 +49,7 @@ export async function checkCollectorAndOrder(collectorId, orderId) {
 }
 
 /**
- * Get detailed bins for a specific pickup order
- * @param {string} orderId - UUID of pickup order
+ * @param {string} orderId 
  * @returns {Promise<{data: Array|null, error: Object|null}>}
  */
 export async function getPickupOrderBins(orderId) {
@@ -75,9 +63,8 @@ export async function getPickupOrderBins(orderId) {
 }
 
 /**
- * Update pickup order status
- * @param {string} orderId - UUID of pickup order
- * @param {string} status - New status value
+ * @param {string} orderId - 
+ * @param {string} status 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function updatePickupOrderStatus(orderId, status) {
@@ -92,9 +79,8 @@ export async function updatePickupOrderStatus(orderId, status) {
 }
 
 /**
- * Count full bins in a pickup order
- * @param {string} orderId - UUID of pickup order
- * @returns {Promise<number>} Count of bins
+ * @param {string} orderId 
+ * @returns {Promise<number>} 
  */
 export async function countFullBinsByOrder(orderId) {
     const { count, error } = await supabase
@@ -107,8 +93,7 @@ export async function countFullBinsByOrder(orderId) {
 }
 
 /**
- * Get all pickup tasks for an order (to check cleared status)
- * @param {string} orderId - UUID of pickup order
+ * @param {string} orderId
  * @returns {Promise<{data: Array|null, error: Object|null}>}
  */
 export async function getPickupTasksByOrderId(orderId) {
@@ -121,13 +106,11 @@ export async function getPickupTasksByOrderId(orderId) {
 }
 
 /**
- * Check if all tasks in an order have been cleared (collected or cancelled)
- * Uses v_order_bins_detailed view which includes request_status from full_bin_requests
- * @param {string} orderId - UUID of pickup order
+ * @param {string} orderId 
  * @returns {Promise<{allCleared: boolean, totalTasks: number, clearedTasks: number, error: Object|null}>}
  */
 export async function checkAllTasksCleared(orderId) {
-    // Use the bins view which has request_status
+
     const { data, error } = await getPickupOrderBins(orderId);
 
     if (error) {
@@ -139,11 +122,6 @@ export async function checkAllTasksCleared(orderId) {
     }
 
     const totalTasks = data.length;
-    // A task is cleared if request_status is COLLECTED or CANCELLED
-    // - PENDING = Not yet collected (bin waiting)
-    // - SCHEDULED = Assigned to route but not collected yet
-    // - COLLECTED = Successfully collected by collector ✅
-    // - CANCELLED = Request cancelled (considered "done") ✅
     const clearedTasks = data.filter(task =>
         task.request_status === 'COLLECTED' || task.request_status === 'CANCELLED'
     ).length;
@@ -163,9 +141,8 @@ export async function checkAllTasksCleared(orderId) {
 }
 
 /**
- * Update pickup task cleared_at timestamp
- * @param {string} orderId - UUID of pickup order
- * @param {string} fullBinId - UUID of full bin
+ * @param {string} orderId
+ * @param {string} fullBinId
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function updatePickupTaskCleared(orderId, fullBinId) {
@@ -181,8 +158,7 @@ export async function updatePickupTaskCleared(orderId, fullBinId) {
 }
 
 /**
- * Get pickup order by ID (to check current status)
- * @param {string} orderId - UUID of pickup order
+ * @param {string} orderId
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function getPickupOrderById(orderId) {
@@ -195,12 +171,10 @@ export async function getPickupOrderById(orderId) {
     return { data, error };
 }
 
-// ==================== BIN STATUS QUERIES ====================
-
+//Bin status updating queries
 /**
- * Update full bin status
- * @param {string} fullBinId - UUID of full bin
- * @param {string} status - New status value
+ * @param {string} fullBinId 
+ * @param {string} status
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function updateFullBinStatus(binId, status) {
@@ -215,8 +189,7 @@ export async function updateFullBinStatus(binId, status) {
 }
 
 /**
- * Get full bin status by bin_id
- * @param {string} binId - UUID of bin
+ * @param {string} binId
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function getFullBinStatusByBinId(binId) {
@@ -230,9 +203,8 @@ export async function getFullBinStatusByBinId(binId) {
 }
 
 /**
- * Update bin status
- * @param {string} binId - UUID of bin
- * @param {string} status - New status value
+ * @param {string} binId 
+ * @param {string} status 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function updateBinStatus(binId, status) {
@@ -247,8 +219,7 @@ export async function updateBinStatus(binId, status) {
 }
 
 /**
- * Get bin by ID (to check current status)
- * @param {string} binId - UUID of bin
+ * @param {string} binId 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function getBinStatusById(binId) {
@@ -261,11 +232,10 @@ export async function getBinStatusById(binId) {
     return { data, error };
 }
 
-// ==================== RECYCLABLE QUERIES ====================
+//recyclable queries
 
 /**
- * Get all recyclable requests for a collector's area
- * @param {string} collectorId - UUID of collector
+ * @param {string} collectorId 
  * @returns {Promise<{data: Array|null, error: Object|null}>}
  */
 export async function getAllRecyclableRequests(collectorId) {
@@ -280,7 +250,7 @@ export async function getAllRecyclableRequests(collectorId) {
         return { data: null, error: collectorError || new Error('Collector area not found') };
     }
 
-    // Then get all recyclable requests for that area
+
     const { data, error } = await supabase
         .from('recyclable_collect_request')
         .select(`
@@ -293,14 +263,13 @@ export async function getAllRecyclableRequests(collectorId) {
             )
         `)
         .eq('area_id', collector.area_id)
-        .order('created_at', { ascending: false }); // most recent first
+        .order('created_at', { ascending: false });
 
     return { data, error };
 }
 
 /**
- * Get specific recyclable request by ID
- * @param {string} requestId - UUID of recyclable request
+ * @param {string} requestId
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function getRecyclableRequestById(requestId) {
@@ -326,9 +295,8 @@ export async function getRecyclableRequestById(requestId) {
 }
 
 /**
- * Update recyclable request
- * @param {string} requestId - UUID of request
- * @param {Object} updates - Fields to update { status, category, weight }
+ * @param {string} requestId 
+ * @param {Object} updates 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function updateRecyclableRequest(requestId, updates) {
@@ -342,11 +310,10 @@ export async function updateRecyclableRequest(requestId, updates) {
     return { data, error };
 }
 
-// ==================== AREA QUERIES ====================
+//area queries
 
 /**
- * Get area by ID
- * @param {string} areaId - UUID of area
+ * @param {string} areaId 
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
 export async function getAreaById(areaId) {

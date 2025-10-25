@@ -1,4 +1,3 @@
-// Collector-related constants to avoid magic strings
 export const COLLECTOR_ERRORS = {
     INVALID_ID: 'Invalid collector ID',
     NOT_FOUND: 'Collector not found',
