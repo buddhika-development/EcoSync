@@ -1,4 +1,3 @@
-// Recyclable-related constants to avoid magic strings
 export const RECYCLABLE_ERRORS = {
     INVALID_ID: 'Invalid recyclable request ID',
     NOT_FOUND: 'Recyclable request not found',

@@ -12,7 +12,7 @@ const createLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// POST /api/users  (admin only)
+
 userRouter.post('/', createLimiter, createUser);
 
 export default userRouter;

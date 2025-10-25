@@ -2,16 +2,13 @@ import { fail, okay } from "../../../libs/response.js";
 import updateRecyclableUC from "../../usecase/recyclableUsecase/updateRecyclableUC.js";
 
 /**
- * Controller for updating recyclable request details
- * SOLID: Single Responsibility - only handles HTTP request/response
- * 
- * @param {Object} req - Express request (expects req.params.requestId, req.body)
- * @param {Object} res - Express response
+ *  @param {Object} req 
+ * @param {Object} res 
  */
 export default async function updateRecyclableController(req, res) {
     try {
         const { requestId } = req.params;
-        const updates = req.body; // { status?, category?, weight? }
+        const updates = req.body;
         const collectorId = req.user?.uid;
 
         if (!collectorId) {

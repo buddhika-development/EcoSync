@@ -63,14 +63,14 @@
 }
 
 /* === Dark theme override === */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --eco-bg: #1F2E25;
     --eco-surface: #2C3A30;
     --eco-text: #FFFFFF;
     --eco-subtext: #C9D5C9;
   }
-}
+} */
 
 /* === Global element defaults === */
 html,

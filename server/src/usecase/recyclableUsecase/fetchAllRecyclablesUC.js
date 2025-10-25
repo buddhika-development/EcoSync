@@ -2,8 +2,6 @@ import { RECYCLABLE_ERRORS, RECYCLABLE_SUCCESS } from "../../constants/recyclabl
 import { getAllRecyclableRequests, getCollectorById } from "../../repositories/collectorRepository/collectorRepo.js";
 
 /**
- * Validates UUID format
- * SOLID: Single Responsibility - only validates UUID format
  * @param {string} id 
  * @returns {boolean}
  */
@@ -13,18 +11,11 @@ function isValidUUID(id) {
 }
 
 /**
- * Business logic for fetching all recyclable requests for a collector
- * SOLID:
- * - Single Responsibility: Only orchestrates fetching recyclable requests
- * - Dependency Inversion: Depends on repository abstraction
- * 
- * Design Pattern: Use Case Pattern - encapsulates business logic
- * 
- * @param {string} collectorId - UUID of collector
- * @returns {Promise<Object>} Standardized response { ok, status, message, data? }
+ * @param {string} collectorId 
+ * @returns {Promise<Object>} 
  */
 export default async function fetchAllRecyclablesUC(collectorId) {
-    // Step 1: Validate input
+
     if (!collectorId || !isValidUUID(collectorId)) {
         return {
             ok: false,
@@ -33,7 +24,7 @@ export default async function fetchAllRecyclablesUC(collectorId) {
         };
     }
 
-    // Step 2: Verify collector exists and has correct role
+
     const { data: collectorData, error: collectorError } = await getCollectorById(collectorId);
 
     if (collectorError || !collectorData) {
@@ -45,7 +36,7 @@ export default async function fetchAllRecyclablesUC(collectorId) {
         };
     }
 
-    // Step 3: Fetch all recyclable requests for this collector
+
     const { data: requests, error: requestsError } = await getAllRecyclableRequests(collectorId);
 
     if (requestsError) {
@@ -57,7 +48,7 @@ export default async function fetchAllRecyclablesUC(collectorId) {
         };
     }
 
-    // Step 4: Transform data to match frontend expectations
+
     const transformedRequests = (requests || []).map(request => ({
         id: request.recyclable_collect_request_id,
         userId: request.user_id,
@@ -71,7 +62,7 @@ export default async function fetchAllRecyclablesUC(collectorId) {
         users: request.users
     }));
 
-    // Step 5: Return success with transformed data
+
     return {
         ok: true,
         status: 200,

@@ -2,11 +2,8 @@ import { fail, okay } from "../../../libs/response.js";
 import updateBinStatusUC from "../../usecase/collectorUsecase/updateBinStatusUC.js";
 
 /**
- * Controller for updating bin status when collected
- * SOLID: Single Responsibility - only handles HTTP request/response
- * 
- * @param {Object} req - Express request (expects req.params.binId, req.body.bin_status, req.body.full_bin_status, req.body.order_id)
- * @param {Object} res - Express response
+ * @param {Object} req 
+ * @param {Object} res 
  */
 export default async function updateBinStatusController(req, res) {
     try {

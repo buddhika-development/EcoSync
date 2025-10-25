@@ -2,16 +2,12 @@ import { fail, okay } from "../../../libs/response.js";
 import fetchAllPickupsUC from "../../usecase/collectorUsecase/fetchAllPickupsUC.js";
 
 /**
- * Controller for fetching all pickup routes for a collector
- * SOLID: Single Responsibility - only handles HTTP request/response
- * Design Pattern: Controller Pattern - delegates to use case layer
- * 
- * @param {Object} req - Express request (expects req.user.uid from auth middleware)
- * @param {Object} res - Express response
+ * @param {Object} req 
+ * @param {Object} res 
  */
 export default async function fetchAllPickupsController(req, res) {
     try {
-        // Get collector ID from authenticated user (set by requireAuth middleware)
+
         const collectorId = req.user?.uid;
 
         if (!collectorId) {
@@ -20,7 +16,7 @@ export default async function fetchAllPickupsController(req, res) {
 
         console.log("Fetching pickup routes for collector:", collectorId);
 
-        // Delegate to use case layer
+        // Delegate to use case
         const { ok, status, message, data } = await fetchAllPickupsUC(collectorId);
 
         if (!ok) {

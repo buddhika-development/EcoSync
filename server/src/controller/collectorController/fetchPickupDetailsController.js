@@ -2,11 +2,8 @@ import { fail, okay } from "../../../libs/response.js";
 import fetchPickupDetailsUC from "../../usecase/collectorUsecase/fetchPickupDetailsUC.js";
 
 /**
- * Controller for fetching detailed bins for a specific pickup order
- * SOLID: Single Responsibility - only handles HTTP request/response
- * 
- * @param {Object} req - Express request (expects req.params.orderId)
- * @param {Object} res - Express response
+ * @param {Object} req 
+ * @param {Object} res 
  */
 export default async function fetchPickupDetailsController(req, res) {
     try {
@@ -20,7 +17,7 @@ export default async function fetchPickupDetailsController(req, res) {
         console.log("Fetching pickup details for order:", orderId);
         console.log("Fetching pickup details for collector:", collectorId);
 
-        // Delegate to use case layer
+        // Delegate to use case 
         const { ok, status, message, data } = await fetchPickupDetailsUC(orderId, collectorId);
 
         console.log("Fetch pickup details result:", { ok, status, message, data });

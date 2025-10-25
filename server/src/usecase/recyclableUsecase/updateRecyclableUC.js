@@ -3,31 +3,20 @@ import { updateRecyclableSchema } from "../../validation/recyclable.schema.js";
 import { getRecyclableRequestById, updateRecyclableRequest } from "../../repositories/collectorRepository/collectorRepo.js";
 import { _calculate_waste_recycle_coin } from "../../functions/_calculate_recycle_coin.js";
 
-/**
- * Validates UUID format
- */
+
 function isValidUUID(id) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(id);
 }
 
 /**
- * Business logic for updating recyclable request details
- * 
- * Key Features:
- * 1. Idempotency - returns success message if status already updated
- * 2. Validates collector authorization
- * 3. Supports partial updates (status, category, weight)
- * 
- * SOLID: Single Responsibility - only handles recyclable update logic
- * 
- * @param {string} requestId - UUID of recyclable request
- * @param {Object} updates - Fields to update { status?, category?, weight? }
- * @param {string} collectorId - UUID of authenticated collector
- * @returns {Promise<Object>} Standardized response
+ * @param {string} requestId 
+ * @param {Object} updates
+ * @param {string} collectorId 
+ * @returns {Promise<Object>} 
  */
 export default async function updateRecyclableUC(requestId, updates, collectorId) {
-    // Step 1: Validate request ID
+
     if (!requestId || !isValidUUID(requestId)) {
         return {
             ok: false,
@@ -36,7 +25,7 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
         };
     }
 
-    // Step 2: Validate update data
+
     const validation = updateRecyclableSchema.safeParse(updates);
 
     if (!validation.success) {
@@ -48,7 +37,7 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
         };
     }
 
-    // Step 3: Check if request exists and collector has access
+
     const { data: existingRequest, error: fetchError } = await getRecyclableRequestById(requestId);
 
     if (fetchError) {
@@ -68,7 +57,7 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
         };
     }
 
-    // Step 4: Verify collector owns this request (check via area)
+
     if (existingRequest.area?.collector_id && existingRequest.area.collector_id !== collectorId) {
         return {
             ok: false,
@@ -77,7 +66,6 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
         };
     }
 
-    // Step 5: Idempotency check - if status update requested and already in that state
     if (validation.data.status && existingRequest.status === validation.data.status) {
         let message = RECYCLABLE_SUCCESS.ALREADY_UPDATED;
 
@@ -93,7 +81,7 @@ export default async function updateRecyclableUC(requestId, updates, collectorId
                 break;
         }
 
-        // Transform existing request data
+
         const transformedExisting = {
             id: existingRequest.recyclable_collect_request_id,
             userId: existingRequest.user_id,

@@ -6,9 +6,6 @@ import {
     checkAllTasksCleared
 } from "../../repositories/collectorRepository/collectorRepo.js";
 
-/**
- * Validation schema for pickup status update
- */
 const updatePickupStatusSchema = z.object({
     status: z.enum([
         PICKUP_STATUS.SCHEDULED,
@@ -18,30 +15,20 @@ const updatePickupStatusSchema = z.object({
     ])
 });
 
-/**
- * Validates UUID format
- */
+
 function isValidUUID(id) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(id);
 }
 
 /**
- * Business logic for updating pickup order status
- * SOLID: Single Responsibility - only handles status update logic
- * 
- * Key Validations:
- * 1. Cannot mark as COMPLETED unless all bins are collected/cancelled
- * 2. Idempotency - returns success message if already in requested state
- * 3. Collector authorization check
- * 
- * @param {string} orderId - UUID of pickup order
- * @param {string} status - New status value
- * @param {string} collectorId - UUID of authenticated collector
- * @returns {Promise<Object>} Standardized response
+ * @param {string} orderId 
+ * @param {string} status 
+ * @param {string} collectorId 
+ * @returns {Promise<Object>}
  */
 export default async function updatePickupStatusUC(orderId, status, collectorId) {
-    // Step 1: Validate order ID
+
     if (!orderId || !isValidUUID(orderId)) {
         return {
             ok: false,
@@ -50,7 +37,6 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         };
     }
 
-    // Step 2: Validate status value
     const validation = updatePickupStatusSchema.safeParse({ status });
 
     if (!validation.success) {
@@ -64,7 +50,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
 
     const newStatus = validation.data.status;
 
-    // Step 3: Get current order to check existing status
+
     const { data: existingOrder, error: fetchError } = await getPickupOrderById(orderId);
 
     if (fetchError) {
@@ -84,7 +70,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         };
     }
 
-    // Step 4: Verify collector owns this order
+
     if (existingOrder.collector_id !== collectorId) {
         return {
             ok: false,
@@ -93,7 +79,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         };
     }
 
-    // Step 5: Idempotency check - if already in requested state, return success
+
     if (existingOrder.status === newStatus) {
         let message = COLLECTOR_SUCCESS.ALREADY_UPDATED;
 
@@ -117,8 +103,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         };
     }
 
-    // Step 6: Special validation for COMPLETED status
-    // Cannot complete unless all bins are collected or cancelled
+
     if (newStatus === PICKUP_STATUS.COMPLETED) {
         const { allCleared, totalTasks, clearedTasks, error: checkError } = await checkAllTasksCleared(orderId);
 
@@ -153,7 +138,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         }
     }
 
-    // Step 7: Update status in database
+
     const { data, error } = await updatePickupOrderStatus(orderId, newStatus);
 
     if (error) {
@@ -173,7 +158,7 @@ export default async function updatePickupStatusUC(orderId, status, collectorId)
         };
     }
 
-    // Step 8: Return success
+
     return {
         ok: true,
         status: 200,

@@ -2,7 +2,6 @@ import { COLLECTOR_ERRORS, COLLECTOR_SUCCESS } from "../../constants/collector.c
 import { checkCollectorAndOrder, getPickupOrderBins } from "../../repositories/collectorRepository/collectorRepo.js";
 
 /**
- * Validates UUID format
  * @param {string} id 
  * @returns {boolean}
  */
@@ -12,15 +11,12 @@ function isValidUUID(id) {
 }
 
 /**
- * Business logic for fetching detailed bins for a pickup order
- * SOLID: Single Responsibility - orchestrates pickup details fetching
- * 
- * @param {string} orderId - UUID of pickup order
- * @param {string} collectorId - UUID of authenticated collector
- * @returns {Promise<Object>} Standardized response
+ * @param {string} orderId 
+ * @param {string} collectorId 
+ * @returns {Promise<Object>} 
  */
 export default async function fetchPickupDetailsUC(orderId, collectorId) {
-    // Step 1: Validate input
+
     if (!orderId || !isValidUUID(orderId)) {
         return {
             ok: false,
@@ -29,7 +25,7 @@ export default async function fetchPickupDetailsUC(orderId, collectorId) {
         };
     }
 
-    // Step 2: Fetch bins for this order
+
     const { data: bins, error } = await getPickupOrderBins(orderId);
 
     console.log("Fetched bins for order:", bins);
@@ -44,7 +40,7 @@ export default async function fetchPickupDetailsUC(orderId, collectorId) {
         };
     }
 
-    // Step 3: Verify collector owns this order (if bins exist)
+
     if (bins && bins.length > 0) {
         const { data: orderCheck, error: orderError } = await checkCollectorAndOrder(collectorId, orderId);
 
@@ -57,7 +53,7 @@ export default async function fetchPickupDetailsUC(orderId, collectorId) {
         }
     }
 
-    // Step 4: Return success
+
     return {
         ok: true,
         status: 200,

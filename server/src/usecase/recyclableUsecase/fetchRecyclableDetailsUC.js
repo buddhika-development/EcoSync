@@ -2,7 +2,6 @@ import { RECYCLABLE_ERRORS, RECYCLABLE_SUCCESS } from "../../constants/recyclabl
 import { getRecyclableRequestById } from "../../repositories/collectorRepository/collectorRepo.js";
 
 /**
- * Validates UUID format
  * @param {string} id 
  * @returns {boolean}
  */
@@ -12,15 +11,12 @@ function isValidUUID(id) {
 }
 
 /**
- * Business logic for fetching specific recyclable request details
- * SOLID: Single Responsibility - orchestrates recyclable request fetching
- * 
- * @param {string} requestId - UUID of recyclable request
- * @param {string} collectorId - UUID of authenticated collector
- * @returns {Promise<Object>} Standardized response
+ * @param {string} requestId 
+ * @param {string} collectorId
+ * @returns {Promise<Object>} 
  */
 export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
-    // Step 1: Validate input
+
     if (!requestId || !isValidUUID(requestId)) {
         return {
             ok: false,
@@ -29,7 +25,7 @@ export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
         };
     }
 
-    // Step 2: Fetch recyclable request
+
     const { data: request, error } = await getRecyclableRequestById(requestId);
 
     if (error) {
@@ -49,7 +45,7 @@ export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
         };
     }
 
-    // Step 3: Verify collector owns this request (authorization check)
+
     if (request.collector_id && request.collector_id !== collectorId) {
         return {
             ok: false,
@@ -58,7 +54,7 @@ export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
         };
     }
 
-    // Step 4: Transform data to match frontend expectations
+
     const transformedRequest = {
         id: request.recyclable_collect_request_id,
         userId: request.user_id,
@@ -73,7 +69,6 @@ export default async function fetchRecyclableDetailsUC(requestId, collectorId) {
         area: request.area
     };
 
-    // Step 5: Return success with transformed data
     return {
         ok: true,
         status: 200,
