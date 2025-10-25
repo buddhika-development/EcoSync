@@ -2,7 +2,7 @@
 import { jest } from '@jest/globals';
 
 
-jest.unstable_mockModule('../../src/repositories/collectorRepository/collectorRepo.js', () => ({
+jest.unstable_mockModule('../../../src/repositories/collectorRepository/collectorRepo.js', () => ({
     getPickupOrderBins: jest.fn(),
     checkCollectorAndOrder: jest.fn()
 }));

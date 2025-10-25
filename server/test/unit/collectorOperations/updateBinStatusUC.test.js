@@ -2,7 +2,7 @@
 import { jest } from '@jest/globals';
 
 
-jest.unstable_mockModule('../../src/repositories/collectorRepository/collectorRepo.js', () => ({
+jest.unstable_mockModule('../../../src/repositories/collectorRepository/collectorRepo.js', () => ({
     getBinStatusById: jest.fn(),
     getFullBinStatusByBinId: jest.fn(),
     updateBinStatus: jest.fn(),
