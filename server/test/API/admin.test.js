@@ -13,7 +13,7 @@ describe('Admin Bins Endpoint - GET /api/admin/bins', () => {
     expect(res.body).toHaveProperty('ok', true);
   });
 
-  test('GET /api/admin/bins with status filter should return 200', async () => {
+  test('GET /api/admin/bins with status filter should return 200', async  () => {
     const res = await request(app).get('/api/admin/bins?status=FULL');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('ok', true);
