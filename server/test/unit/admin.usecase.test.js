@@ -1,29 +1,4 @@
-/**
- * ============================================================================
- * UNIT TEST - Admin Use Cases
- * ============================================================================
- * 
- * This file demonstrates unit tests for admin use cases.
- * Unit tests focus on testing a SINGLE UNIT (function/module) in isolation
- * by MOCKING all external dependencies.
- * 
- * Coverage:
- * 1. GetAdminBinsUseCase - Fetch all bins with filters
- * 2. GetAdminFullBinsUseCase - Fetch full bins with filters
- * 3. GetPickupProgressUseCase - Get pickup order progress
- * 4. GetScheduledRoutesUseCase - Fetch scheduled routes
- * ============================================================================
- */
-
-// ============================================================================
-// STEP 1: SETUP MOCKS FIRST (CRITICAL FOR ES MODULES)
-// ============================================================================
 import { jest } from '@jest/globals';
-
-/**
- * Mock the repository modules before importing anything else
- * This is critical for ES modules to work properly
- */
 
 // Mock AdminBinRepository
 jest.unstable_mockModule('../../src/repositories/adminRepository/admin.bins.repository.js', () => ({
@@ -53,10 +28,6 @@ jest.unstable_mockModule('../../src/repositories/adminRepository/admin.scheduled
     }
 }));
 
-// ============================================================================
-// STEP 2: IMPORTS (After mocking)
-// ============================================================================
-
 // Import use cases (named exports)
 const { GetAdminBinsUseCase } = await import('../../src/usecase/adminUsecase/getAdminBins.usecase.js');
 const { GetAdminFullBinsUseCase } = await import('../../src/usecase/adminUsecase/getAdminFullBins.usecase.js');
@@ -72,14 +43,11 @@ const { AdminScheduledRoutesRepository } = await import('../../src/repositories/
 // Import test utilities
 import { describe, test, expect, beforeEach } from '@jest/globals';
 
-// ============================================================================
+
 // TEST SUITE 1: GetAdminBinsUseCase
-// ============================================================================
 describe('GetAdminBinsUseCase - Unit Tests', () => {
 
-    // ========================================================================
     // TEST DATA - Repository returns raw data
-    // ========================================================================
     const mockBinsData = {
         items: [
             {
@@ -110,22 +78,17 @@ describe('GetAdminBinsUseCase - Unit Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ========================================================================
     // TEST CASE #1: Success - Get all bins without filters
-    // ========================================================================
     test('should successfully return all bins without filters', async () => {
-        // ARRANGE
+    
         AdminBinRepository.findBins.mockResolvedValue(mockBinsData);
 
-        // ACT
         const result = await GetAdminBinsUseCase({});
 
-        // ASSERT
         expect(result).toBeDefined();
         expect(result.data).toHaveLength(2);
         expect(result.total).toBe(2);
         
-        // Check DTO transformation
         expect(result.data[0]).toEqual({
             id: 'bin-001',
             lat: 6.9271,
@@ -141,55 +104,43 @@ describe('GetAdminBinsUseCase - Unit Tests', () => {
         expect(AdminBinRepository.findBins).toHaveBeenCalledWith({});
     });
 
-    // ========================================================================
     // TEST CASE #2: Success - Filter by status
-    // ========================================================================
     test('should return filtered bins by status', async () => {
-        // ARRANGE
+
         const fullBinsOnly = {
             items: [mockBinsData.items[0]],
             total: 1
         };
         AdminBinRepository.findBins.mockResolvedValue(fullBinsOnly);
 
-        // ACT
         const result = await GetAdminBinsUseCase({ status: 'FULL' });
 
-        // ASSERT
         expect(result.data).toHaveLength(1);
         expect(result.data[0].status).toBe('FULL');
         expect(AdminBinRepository.findBins).toHaveBeenCalledWith({ status: 'FULL' });
     });
 
-    // ========================================================================
     // TEST CASE #3: Error - Invalid status
-    // ========================================================================
     test('should throw validation error for invalid status', async () => {
-        // ACT & ASSERT
+       
         await expect(GetAdminBinsUseCase({ status: 'INVALID' }))
             .rejects.toThrow('Invalid status');
     });
 
-    // ========================================================================
     // TEST CASE #4: Edge Case - Empty result
-    // ========================================================================
     test('should return empty array when no bins found', async () => {
-        // ARRANGE
+     
         AdminBinRepository.findBins.mockResolvedValue({ items: [], total: 0 });
 
-        // ACT
         const result = await GetAdminBinsUseCase({ status: 'FULL' });
 
-        // ASSERT
         expect(result.data).toEqual([]);
         expect(result.total).toBe(0);
     });
 
-    // ========================================================================
     // TEST CASE #5: Edge Case - Null area (orphaned bin)
-    // ========================================================================
     test('should handle bins with null area', async () => {
-        // ARRANGE
+
         const binsWithNullArea = {
             items: [{
                 bin_id: 'bin-003',
@@ -205,17 +156,13 @@ describe('GetAdminBinsUseCase - Unit Tests', () => {
         };
         AdminBinRepository.findBins.mockResolvedValue(binsWithNullArea);
 
-        // ACT
         const result = await GetAdminBinsUseCase({});
 
-        // ASSERT
         expect(result.data[0].areaName).toBeNull();
     });
 });
 
-// ============================================================================
 // TEST SUITE 2: GetAdminFullBinsUseCase
-// ============================================================================
 describe('GetAdminFullBinsUseCase - Unit Tests', () => {
 
     const mockFullBinsData = {
@@ -250,21 +197,16 @@ describe('GetAdminFullBinsUseCase - Unit Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ========================================================================
     // TEST CASE #6: Success - Get all full bins
-    // ========================================================================
     test('should successfully return all full bins', async () => {
-        // ARRANGE
+
         AdminFullBinRepository.findFullBins.mockResolvedValue(mockFullBinsData);
 
-        // ACT
         const result = await GetAdminFullBinsUseCase({});
 
-        // ASSERT
         expect(result.data).toHaveLength(2);
         expect(result.total).toBe(2);
         
-        // Check DTO transformation
         expect(result.data[0]).toEqual({
             fullBinId: 'fb-001',
             binId: 'bin-003',
@@ -280,38 +222,30 @@ describe('GetAdminFullBinsUseCase - Unit Tests', () => {
         expect(AdminFullBinRepository.findFullBins).toHaveBeenCalledTimes(1);
     });
 
-    // ========================================================================
     // TEST CASE #7: Success - Filter by request status
-    // ========================================================================
     test('should return filtered full bins by request status', async () => {
-        // ARRANGE
+ 
         const pendingOnly = {
             items: [mockFullBinsData.items[0]],
             total: 1
         };
         AdminFullBinRepository.findFullBins.mockResolvedValue(pendingOnly);
 
-        // ACT
         const result = await GetAdminFullBinsUseCase({ status: 'PENDING' });
 
-        // ASSERT
         expect(result.data).toHaveLength(1);
         expect(result.data[0].requestStatus).toBe('PENDING');
         expect(AdminFullBinRepository.findFullBins).toHaveBeenCalledWith({ status: 'PENDING' });
     });
 
-    // ========================================================================
     // TEST CASE #8: Error - Invalid status
-    // ========================================================================
     test('should throw validation error for invalid status', async () => {
-        // ACT & ASSERT
+        
         await expect(GetAdminFullBinsUseCase({ status: 'INVALID_STATUS' }))
             .rejects.toThrow('Invalid status');
     });
 
-    // ========================================================================
     // TEST CASE #9: Edge Case - Empty result
-    // ========================================================================
     test('should return empty array when no full bins match filters', async () => {
         // ARRANGE
         AdminFullBinRepository.findFullBins.mockResolvedValue({ items: [], total: 0 });
@@ -324,9 +258,7 @@ describe('GetAdminFullBinsUseCase - Unit Tests', () => {
         expect(result.total).toBe(0);
     });
 
-    // ========================================================================
     // TEST CASE #10: Edge Case - Null coordinates
-    // ========================================================================
     test('should handle null latitude/longitude gracefully', async () => {
         // ARRANGE
         const binsWithNullCoords = {
@@ -354,9 +286,7 @@ describe('GetAdminFullBinsUseCase - Unit Tests', () => {
     });
 });
 
-// ============================================================================
 // TEST SUITE 3: GetPickupProgressUseCase
-// ============================================================================
 describe('GetPickupProgressUseCase - Unit Tests', () => {
 
     const validOrderId = 'd54b18cb-43f7-4500-8624-0fd499cc5767';
@@ -409,9 +339,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ========================================================================
     // TEST CASE #11: Success - Get pickup progress (IN_PROGRESS)
-    // ========================================================================
     test('should successfully return pickup order progress with IN_PROGRESS status', async () => {
         // ARRANGE
         AdminPickupRepository.getOrderWithTasks.mockResolvedValue(mockOrderWithTasks);
@@ -432,9 +360,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
         expect(AdminPickupRepository.getOrderWithTasks).toHaveBeenCalledWith(validOrderId);
     });
 
-    // ========================================================================
     // TEST CASE #12: Success - All tasks completed
-    // ========================================================================
     test('should return COMPLETED status when all tasks are done', async () => {
         // ARRANGE
         const completedOrder = {
@@ -465,9 +391,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
         expect(result.totalTasks).toBe(2);
     });
 
-    // ========================================================================
     // TEST CASE #13: Success - No tasks completed (SCHEDULED)
-    // ========================================================================
     test('should return SCHEDULED status when no tasks are completed', async () => {
         // ARRANGE
         const scheduledOrder = {
@@ -497,9 +421,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
         expect(result.completedTasks).toBe(0);
     });
 
-    // ========================================================================
     // TEST CASE #14: Edge Case - Order with no tasks
-    // ========================================================================
     test('should handle order with no tasks', async () => {
         // ARRANGE
         const orderWithNoTasks = {
@@ -518,9 +440,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
         expect(result.derivedStatus).toBe('SCHEDULED');
     });
 
-    // ========================================================================
     // TEST CASE #15: Edge Case - Collector with no last name
-    // ========================================================================
     test('should handle collector with missing last name', async () => {
         // ARRANGE
         const orderWithPartialName = {
@@ -543,9 +463,7 @@ describe('GetPickupProgressUseCase - Unit Tests', () => {
     });
 });
 
-// ============================================================================
 // TEST SUITE 4: GetScheduledRoutesUseCase
-// ============================================================================
 describe('GetScheduledRoutesUseCase - Unit Tests', () => {
 
     const mockRoutesData = {
@@ -596,17 +514,13 @@ describe('GetScheduledRoutesUseCase - Unit Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ========================================================================
     // TEST CASE #16: Success - Get all scheduled routes (grouped)
-    // ========================================================================
     test('should successfully return grouped scheduled routes', async () => {
-        // ARRANGE
+
         AdminScheduledRoutesRepository.findAllScheduledRoutes.mockResolvedValue(mockRoutesData);
 
-        // ACT
         const result = await GetScheduledRoutesUseCase({});
 
-        // ASSERT
         expect(result.data).toHaveLength(1); // 2 rows grouped into 1 order
         expect(result.total).toBe(1);
         
@@ -619,17 +533,13 @@ describe('GetScheduledRoutesUseCase - Unit Tests', () => {
         expect(AdminScheduledRoutesRepository.findAllScheduledRoutes).toHaveBeenCalledTimes(1);
     });
 
-    // ========================================================================
     // TEST CASE #17: Success - Filter by status
-    // ========================================================================
     test('should return filtered routes by status', async () => {
-        // ARRANGE
+
         AdminScheduledRoutesRepository.findAllScheduledRoutes.mockResolvedValue(mockRoutesData);
 
-        // ACT
         const result = await GetScheduledRoutesUseCase({ status: 'SCHEDULED' });
 
-        // ASSERT
         expect(result.data[0].orderStatus).toBe('SCHEDULED');
         expect(AdminScheduledRoutesRepository.findAllScheduledRoutes).toHaveBeenCalledWith({
             status: 'SCHEDULED',
@@ -638,26 +548,19 @@ describe('GetScheduledRoutesUseCase - Unit Tests', () => {
         });
     });
 
-    // ========================================================================
     // TEST CASE #18: Edge Case - Empty result
-    // ========================================================================
     test('should return empty array when no routes found', async () => {
-        // ARRANGE
         AdminScheduledRoutesRepository.findAllScheduledRoutes.mockResolvedValue({ items: [], total: 0 });
 
-        // ACT
         const result = await GetScheduledRoutesUseCase({ status: 'COMPLETED' });
 
-        // ASSERT
         expect(result.data).toEqual([]);
         expect(result.total).toBe(0);
     });
 
-    // ========================================================================
     // TEST CASE #19: Edge Case - Order with no tasks
-    // ========================================================================
     test('should handle orders with no tasks', async () => {
-        // ARRANGE
+      
         const orderWithoutTasks = {
             items: [{
                 order_id: 'order-002',
@@ -682,19 +585,15 @@ describe('GetScheduledRoutesUseCase - Unit Tests', () => {
         };
         AdminScheduledRoutesRepository.findAllScheduledRoutes.mockResolvedValue(orderWithoutTasks);
 
-        // ACT
         const result = await GetScheduledRoutesUseCase({});
 
-        // ASSERT
         expect(result.data).toHaveLength(1);
         expect(result.data[0].tasks).toEqual([]);
     });
 
-    // ========================================================================
     // TEST CASE #20: Edge Case - Multiple orders
-    // ========================================================================
     test('should correctly group multiple orders', async () => {
-        // ARRANGE
+   
         const multipleOrders = {
             items: [
                 ...mockRoutesData.items,
@@ -722,31 +621,11 @@ describe('GetScheduledRoutesUseCase - Unit Tests', () => {
         };
         AdminScheduledRoutesRepository.findAllScheduledRoutes.mockResolvedValue(multipleOrders);
 
-        // ACT
         const result = await GetScheduledRoutesUseCase({});
 
-        // ASSERT
         expect(result.data).toHaveLength(2); // 2 distinct orders
         expect(result.data[0].tasks).toHaveLength(2);
         expect(result.data[1].tasks).toHaveLength(1);
     });
 });
 
-// ============================================================================
-// SUMMARY
-// ============================================================================
-/**
- * Total Test Cases: 20
- * 
- * GetAdminBinsUseCase: 5 tests
- * GetAdminFullBinsUseCase: 5 tests  
- * GetPickupProgressUseCase: 5 tests
- * GetScheduledRoutesUseCase: 5 tests
- * 
- * Coverage:
- * - Success scenarios (happy paths)
- * - Error handling (validation errors)
- * - Edge cases (empty results, null values, grouping logic)
- * - DTO transformations
- * - Mock verification
- */
