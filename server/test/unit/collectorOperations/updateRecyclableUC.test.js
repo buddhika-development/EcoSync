@@ -2,13 +2,13 @@
 import { jest } from '@jest/globals';
 
 
-jest.unstable_mockModule('../../src/repositories/collectorRepository/collectorRepo.js', () => ({
+jest.unstable_mockModule('../../../src/repositories/collectorRepository/collectorRepo.js', () => ({
     getRecyclableRequestById: jest.fn(),
     updateRecyclableRequest: jest.fn()
 }));
 
 
-jest.unstable_mockModule('../../src/functions/_calculate_recycle_coin.js', () => ({
+jest.unstable_mockModule('../../../src/functions/_calculate_recycle_coin.js', () => ({
     _calculate_waste_recycle_coin: jest.fn()
 }));
 

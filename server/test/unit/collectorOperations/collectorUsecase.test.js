@@ -2,19 +2,19 @@
 import { jest } from '@jest/globals';
 
 
-jest.unstable_mockModule('../../src/repositories/collectorRepository/collectorRepo.js', () => ({
+jest.unstable_mockModule('../../../src/repositories/collectorRepository/collectorRepo.js', () => ({
     getCollectorById: jest.fn(),
     getAllPickupOrders: jest.fn(),
 }));
 
 
-const { default: fetchAllPickupsUC } = await import('../../src/usecase/collectorUsecase/fetchAllPickupsUC.js');
+const { default: fetchAllPickupsUC } = await import('../../../src/usecase/collectorUsecase/fetchAllPickupsUC.js');
 
 
-const { getCollectorById, getAllPickupOrders } = await import('../../src/repositories/collectorRepository/collectorRepo.js');
+const { getCollectorById, getAllPickupOrders } = await import('../../../src/repositories/collectorRepository/collectorRepo.js');
 
 
-const { COLLECTOR_ERRORS, COLLECTOR_SUCCESS } = await import('../../src/constants/collector.constants.js');
+const { COLLECTOR_ERRORS, COLLECTOR_SUCCESS } = await import('../../../src/constants/collector.constants.js');
 
 
 import { describe, test, expect, beforeEach } from '@jest/globals';

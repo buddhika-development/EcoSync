@@ -2,7 +2,7 @@
 import { jest } from '@jest/globals';
 
 
-jest.unstable_mockModule('../../src/repositories/collectorRepository/collectorRepo.js', () => ({
+jest.unstable_mockModule('../../../src/repositories/collectorRepository/collectorRepo.js', () => ({
     getAllRecyclableRequests: jest.fn(),
     getCollectorById: jest.fn()
 }));
@@ -69,8 +69,8 @@ describe('fetchAllRecyclablesUC', () => {
         expect(result.data).toHaveLength(2);
 
         // Verify data transformation
-        expect(result.data[0]).toHaveProperty('id', 'req-001');
-        expect(result.data[0]).toHaveProperty('userId', 'user-001');
+        expect(result.data[0]).toHaveProperty('id', '8598c0cf-d287-4495-bb18-e61a67893jfh');
+        expect(result.data[0]).toHaveProperty('userId', '8598c0cf-d287-4495-bb18-e61a7773d635');
         expect(result.data[0]).toHaveProperty('status', 'PENDING');
         expect(result.data[0]).toHaveProperty('type', 'PLASTIC');
         expect(result.data[0]).toHaveProperty('weight', 5.5);
