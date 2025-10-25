@@ -177,11 +177,11 @@ export async function getPickupOrderById(orderId) {
  * @param {string} status
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
-export async function updateFullBinStatus(binId, status) {
+export async function updateFullBinStatus(full_bin_id, status) {
     const { data, error } = await supabase
         .from('full_bin_status')
         .update({ request_status: status })
-        .eq('bin_id', binId)
+        .eq('full_bin_id', full_bin_id)
         .select('*')
         .single();
 
@@ -192,13 +192,17 @@ export async function updateFullBinStatus(binId, status) {
  * @param {string} binId
  * @returns {Promise<{data: Object|null, error: Object|null}>}
  */
-export async function getFullBinStatusByBinId(binId) {
+export async function getFullBinStatusByBinId(full_bin_id) {
+
+    console.log("Fetching Full Bin Status for ID:", full_bin_id);
     const { data, error } = await supabase
         .from('full_bin_status')
         .select('*')
-        .eq('bin_id', binId)
+        .eq('full_bin_id', full_bin_id)
         .single();
 
+
+    console.log("Fetched Full Bin Status:", data, error);
     return { data, error };
 }
 
